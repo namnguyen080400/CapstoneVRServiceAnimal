@@ -1,0 +1,47 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Visual Studio/Code generated files
+*.csproj       # C# project files
+*.unityproj    # Unity project files
+*.sln          # Solution files
+*.suo          # User options
+*.user         # User specific files for Visual Studio
+*.userprefs    # User preferences
+*.pidb         # Mono Intermediate Debug Format
+*.booproj      # Boo project files
+*.svd          # User-specific Visual Studio data files
+
+# Build results
+[Oo]bj/
+[Bb]in/
+
+# MSP files (Microsoft Patch)
+*.msp
+
+# Windows image files
+*.img
+
+# Backup & System files
+*.bak
+*.tmp
+*.log
+*~
+
+# Version control system folders
+.svn/
+.git/
+.hg/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node modules
+node_modules/
