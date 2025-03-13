@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638774153358805050
-    m_Hash: 1406902011
+      ticks: 638774156643408459
+    m_Hash: 3725847042
   m_LockFileStatus:
     m_FilePath: C:/tmp/UnityPractice/CapstoneVRServiceAnimal/AnimialRealityProject/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638774153713369855
-    m_Hash: 266852741
+      ticks: 638774156643413545
+    m_Hash: 776913302
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
