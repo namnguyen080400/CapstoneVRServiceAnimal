@@ -1,0 +1,62 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\Assets\\Scripts\\PetBehavior.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\PetBehavior.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\Assets\\Scripts\\PetFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\PetFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PetFollow.cs",
+              "DocumentMoniker": "C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\Assets\\Scripts\\PetFollow.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\PetFollow.cs",
+              "ToolTip": "C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\Assets\\Scripts\\PetFollow.cs",
+              "RelativeToolTip": "Assets\\Scripts\\PetFollow.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAQwDQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-11T00:05:59.31Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PetBehavior.cs",
+              "DocumentMoniker": "C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\Assets\\Scripts\\PetBehavior.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\PetBehavior.cs",
+              "ToolTip": "C:\\Users\\jy229\\Desktop\\CapstoneVRServiceAnimal\\AnimialRealityProject\\Assets\\Scripts\\PetBehavior.cs",
+              "RelativeToolTip": "Assets\\Scripts\\PetBehavior.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAAQwDwAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-07T22:20:04.201Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

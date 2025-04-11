@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
-public class PetBehavior: MonoBehaviour
+public class PetBehavior : MonoBehaviour
 {
     private Animator animator;
-    private int currentID = -1; //current State
+    private int currentID = -1;
+    private bool animationLocked = false;
 
-    //Pet Animation Enum
     public enum PetAnim
     {
         Breath = 0,
@@ -24,27 +23,55 @@ public class PetBehavior: MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    
-    //play animation
-   
+  
+    //basic animation play method
+
     public void Play(PetAnim anim)
+    {
+        if (animationLocked) return; // don't change animation if locked
+
+        int id = (int)anim;
+
+        if (currentID == id) return;
+
+        animator.SetInteger("AnimationID", -1); // Reset first
+        animator.SetInteger("AnimationID", id);
+        currentID = id;
+
+        Debug.Log($"[PetBehavior] Playing animation: {anim} (ID: {id})");
+    }
+
+
+    //play animation and lock it for a duration to prevent override
+    public void PlayLocked(PetAnim anim, float lockDuration)
     {
         int id = (int)anim;
 
-        if (currentID == id) return; 
-        animator.SetInteger("AnimationID", -1); //reset animation
+        animator.SetInteger("AnimationID", -1); // Reset first
         animator.SetInteger("AnimationID", id);
-
         currentID = id;
-        Debug.Log($"Playing animation: {anim} (ID: {id})");
+
+        Debug.Log($"[PetBehavior] Playing LOCKED animation: {anim} (ID: {id}) for {lockDuration}s");
+        animationLocked = true;
+        StartCoroutine(UnlockAfter(lockDuration));
     }
 
+    private IEnumerator UnlockAfter(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        animationLocked = false;
+        Debug.Log("[PetBehavior] Animation lock released");
+    }
+    public bool IsAnimationLocked => animationLocked;
+
+    //shortcut methods
+
     public void Breath() => Play(PetAnim.Breath);
-    public void WagTail() => Play(PetAnim.Wag);
     public void Walk() => Play(PetAnim.Walk);
     public void Run() => Play(PetAnim.Run);
-    public void Eat() => Play(PetAnim.Eat);
-    public void Angry() => Play(PetAnim.Angry);
-    public void Sit() => Play(PetAnim.Sit);
 
+    public void WagTail() => PlayLocked(PetAnim.Wag, 2f);
+    public void Eat() => PlayLocked(PetAnim.Eat, 3f);
+    public void Angry() => PlayLocked(PetAnim.Angry, 2.5f);
+    public void Sit() => PlayLocked(PetAnim.Sit, 4f);
 }

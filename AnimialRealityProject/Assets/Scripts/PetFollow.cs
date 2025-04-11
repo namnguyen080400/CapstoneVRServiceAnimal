@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PetFollow : MonoBehaviour
 {
     [Header("Player Reference")]
-    // Assign Main Camera from XR Origin
-    public Transform playerCamera; 
+    public Transform playerCamera;
 
     [Header("Follow Settings")]
     public float followSpeed = 1.5f;
@@ -29,28 +26,27 @@ public class PetFollow : MonoBehaviour
     {
         if (!playerCamera || petBehavior == null) return;
 
+        //animation lock
+        if (petBehavior.IsAnimationLocked) return;
+
         Vector3 targetPosition = playerCamera.position;
-        targetPosition.y = transform.position.y; // Lock Y position (stay on ground)
+        targetPosition.y = transform.position.y;
 
         float distance = Vector3.Distance(transform.position, targetPosition);
 
         if (distance > stopDistance)
         {
-            // Move toward player
             Vector3 direction = (targetPosition - transform.position).normalized;
             transform.position += direction * followSpeed * Time.deltaTime;
 
-            // Rotate to face the player
             Quaternion lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
 
-            petBehavior.Play(PetBehavior.PetAnim.Walk);
+            petBehavior.Run();
         }
         else
         {
-            // Stop and idle when close enough
-            petBehavior.Play(PetBehavior.PetAnim.Breath);
+            petBehavior.Breath();
         }
     }
 }
-
