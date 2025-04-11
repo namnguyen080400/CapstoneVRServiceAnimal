@@ -386,6 +386,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 37.748, y: -178.237, z: -135.473}
+--- !u!1 &854099711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 854099714}
+  - component: {fileID: 854099713}
+  - component: {fileID: 854099712}
+  m_Layer: 0
+  m_Name: VoiceCommandManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &854099712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854099711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199d260875ba7940941be8c64ea6b2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: voice_command.wav
+  whisperServerUrl: http://127.0.0.1:5000/transcribe
+--- !u!114 &854099713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854099711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eac9a7f4bef44a04db5900c73b7e3af3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: voice_command.wav
+--- !u!4 &854099714
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854099711}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.1658673, y: 1.2, z: -1.2246311}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &876045351
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,11 +624,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
-  turnSpeed: 2
-  changeDirectionTime: 3
+  rotationSpeed: 500
   minBounds: {x: -10, y: 0, z: -10}
   maxBounds: {x: 10, y: 0, z: 10}
-  sittingDuration: 10
 --- !u!114 &1201240853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582,11 +640,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
-  turnSpeed: 2
-  changeDirectionTime: 3
+  rotationSpeed: 500
   minBounds: {x: -10, y: 0, z: -10}
   maxBounds: {x: 10, y: 0, z: 10}
-  sittingDuration: 10
 --- !u!1 &1564306465
 GameObject:
   m_ObjectHideFlags: 0
@@ -702,7 +758,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6191479115475244193, guid: cbd015c8392edc84097e8e4de87a9d0a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.83
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6191479115475244193, guid: cbd015c8392edc84097e8e4de87a9d0a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -710,7 +766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6191479115475244193, guid: cbd015c8392edc84097e8e4de87a9d0a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.47
+      value: 2.62
       objectReference: {fileID: 0}
     - target: {fileID: 6191479115475244193, guid: cbd015c8392edc84097e8e4de87a9d0a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -766,3 +822,4 @@ SceneRoots:
   - {fileID: 876045354}
   - {fileID: 246006959}
   - {fileID: 688839126}
+  - {fileID: 854099714}

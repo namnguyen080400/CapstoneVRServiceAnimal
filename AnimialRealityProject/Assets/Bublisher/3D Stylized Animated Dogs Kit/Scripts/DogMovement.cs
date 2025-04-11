@@ -1,144 +1,327 @@
 using UnityEngine;
+using UnityEngine.Windows.Speech;
+using System.Collections.Generic;
+using System.Linq;
+using System.Collections;
 
 public class DogMovement : MonoBehaviour
 {
-    public float speed = 2f; // Movement speed
-    
-    public float turnSpeed = 2f; // Turning speed for smooth rotation
-    public float changeDirectionTime = 3f; // Time to change direction
-    public Vector3 minBounds = new Vector3(-10f, 0f, -10f); // Minimum movement boundary
-    public Vector3 maxBounds = new Vector3(10f, 0f, 10f); // Maximum movement boundary
-    public float sittingDuration = 10f; // Sitting duration in seconds
+    public float speed = 3f;
+    public float rotationSpeed = 500f;
+    private Animator animator;
 
-    private float timer; // Timer for direction change
-    private float sittingTimer; // Timer for sitting
-    private Vector3 moveDirection; // Current movement direction
-    private Animator animator; // Reference to Animator for animations
-    private bool isSitting = true; // Starts in the sitting state
-    private bool isAngry = false; // Indicates whether the dog is angry
+     private static KeywordRecognizer keywordRecognizer;
+    private static Dictionary<string, System.Action> commands = new Dictionary<string, System.Action>();
+    
+    private static bool voiceInitialized = false;
+
+    private static DictationRecognizer dictationRecognizer;
+
+    public Vector3 minBounds = new Vector3(-10f, 0f, -10f);
+    public Vector3 maxBounds = new Vector3(10f, 0f, 10f);
+
 
     void Start()
     {
         animator = GetComponent<Animator>();
+       /*  if (!voiceInitialized) 
+        {
+            animator = GetComponent<Animator>(); // Get the Animator component
+            DefineVoiceCommand();
+            Debug.Log("dog start");
+            if (keywordRecognizer == null) {
+                // Initialize keyword recognizer
+                keywordRecognizer = new KeywordRecognizer(commands.Keys.ToArray());
+                //keywordRecognizer.OnPhraseRecognized += OnCommandRecognized;
+                keywordRecognizer.OnPhraseRecognized += (args) =>
+                {
+                    Debug.Log("Heard: " + args.text);
+                };
+                keywordRecognizer.Start();
+            }
 
+
+    
+            Debug.Log("Commands: " + string.Join(", ", commands.Keys));
+            Debug.Log("Recognizer status: " + (keywordRecognizer.IsRunning ? "Running" : "Not Running"));
+            
+            foreach (var device in Microphone.devices)
+            {
+                Debug.Log("Mic device: " + device);
+            }
+
+            voiceInitialized = true;
+        } */
+
+            dictationRecognizer = new DictationRecognizer();
+        dictationRecognizer.DictationResult += (text, confidence) =>
+        {
+            Debug.Log("🎤 Dictation heard: " + text);
+        };
+        dictationRecognizer.DictationHypothesis += (text) =>
+        {
+            Debug.Log("...listening: " + text);
+        };
+        dictationRecognizer.DictationComplete += (completionCause) =>
+        {
+            Debug.Log("Dictation completed: " + completionCause);
+        };
+        dictationRecognizer.DictationError += (error, hresult) =>
+        {
+            Debug.LogError("Dictation error: " + error);
+        };
+
+        dictationRecognizer.Start();
+        Debug.Log("🎧 DictationRecognizer started...");
+
+
+    }
+
+    public void OnCommandRecognized(PhraseRecognizedEventArgs args)
+    {
+        Debug.Log("Command Recognized: " + args.text);
+        commands[args.text].Invoke();
+    }
+
+
+    public void Update()
+    {
+        /* float moveX = Input.GetAxis("Horizontal"); // A (-1) / D (+1)
+        float moveZ = Input.GetAxis("Vertical");   // W (+1) / S (-1)
+        Vector3 moveDirection = new Vector3((-1) * moveX, 0, (-1) * moveZ).normalized;
+        Move(moveDirection); */
+    }
+
+    public void Move(Vector3 moveDirection)
+    {
+        if (moveDirection.magnitude > 0)
+        {
+            // Calculate new position
+            Vector3 newPosition = transform.position + moveDirection * speed * Time.deltaTime;
+
+            // Clamp position within boundaries
+            newPosition.x = Mathf.Clamp(newPosition.x, minBounds.x, maxBounds.x);
+            newPosition.z = Mathf.Clamp(newPosition.z, minBounds.z, maxBounds.z);
+
+            // Apply movement
+            transform.position = newPosition;
+
+            // Rotate towards movement direction
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+            // Play walking animation
+            //animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            // Stop walking animation
+            //animator.SetBool("isWalking", false);
+        }
+    }
+
+    public void MoveInDirection(Vector3 direction)
+    {
         if (animator != null)
         {
-            // Start with sitting animation
-            animator.SetTrigger("germanshepherd_SittingStart");
-            animator.SetBool("isWalking", false); // Ensure walking is disabled
+            animator.SetTrigger("WalkingNormal"); // Play walking animation
         }
 
-        sittingTimer = sittingDuration; // Initialize sitting timer
-        ChangeDirection(); // Initialize the first direction (won't matter until walking begins)
+        StartCoroutine(MoveOverTime(direction));
     }
 
-    void Update()
+    IEnumerator MoveOverTime(Vector3 direction)
     {
-        if (isSitting)
+        float duration = 1f; // Move for 1 seconds
+        float timeElapsed = 0f;
+
+        while (timeElapsed < duration)
         {
-            // Countdown sitting timer
-            sittingTimer -= Time.deltaTime;
-            if (sittingTimer <= 0)
+            transform.Translate(direction * speed * Time.deltaTime, Space.World);
+
+            // Rotate to face movement direction
+            if (direction != Vector3.zero)
             {
-                MakeDogWalk(); // Transition to walking after sitting duration
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
             }
-            return; // Prevent movement while sitting
+
+            timeElapsed += Time.deltaTime;
+            yield return null;
         }
 
-        if (isAngry)
-        {
-            // Prevent movement while angry
-            return;
-        }
-
-        // Move the dog forward in its current direction
-        transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
-
-        // Check boundaries and change direction if needed
-        if (transform.position.x <= minBounds.x || transform.position.x >= maxBounds.x ||
-            transform.position.z <= minBounds.z || transform.position.z >= maxBounds.z)
-        {
-            ChangeDirectionOnBoundary(); // Change direction immediately
-        }
-
-        // Gradually rotate toward the movement direction
-        if (moveDirection != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
-        }
-
-        // Countdown to change direction at regular intervals
-        timer -= Time.deltaTime;
-        if (timer <= 0)
-        {
-            ChangeDirection();
-        }
+        TransitionToIdle();
     }
 
-    void ChangeDirection()
+
+    public void MakeDogRun() 
     {
-        // Reset the timer
-        timer = changeDirectionTime;
-
-        // Generate a random direction for the dog to move
-        float randomAngle = Random.Range(0f, 360f);
-        transform.rotation = Quaternion.Euler(0, randomAngle, 0);
-
-        // Set movement direction based on the forward direction of the dog
-        moveDirection = transform.forward;
+        if (animator != null)
+        {
+            animator.SetTrigger("Running");
+        }
     }
 
-    void ChangeDirectionOnBoundary()
+    public void MakeDogTransitionRunToIdle() 
     {
-        // Pick a new random direction away from the boundary
-        if (transform.position.x <= minBounds.x) moveDirection = Vector3.right; // Move right
-        else if (transform.position.x >= maxBounds.x) moveDirection = Vector3.left; // Move left
-
-        if (transform.position.z <= minBounds.z) moveDirection = Vector3.forward; // Move forward
-        else if (transform.position.z >= maxBounds.z) moveDirection = Vector3.back; // Move backward
-
-        // Update rotation to face the new direction
-        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-        transform.rotation = targetRotation;
+        if (animator != null)
+        {
+            animator.SetTrigger("RunningToIdle");
+        }
     }
+
+    public void MakeDogWalk() 
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("WalkingNormal");
+        }
+    }
+
+    public void MakeDogTransitionWalkingNormalToIdle() 
+    {
+        Debug.Log("Transition from walking normal to idle");
+        if (animator != null)
+        {
+            animator.SetTrigger("WalkingNormalToIdle");
+        }
+    } 
 
     public void MakeDogSit()
     {
-        if (animator != null && !isSitting && !isAngry)
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("Idle")) 
         {
-            animator.SetTrigger("germanshepherd_SittingStart"); // Trigger sitting animation
-            animator.SetBool("isWalking", false); // Stop walking animation
-            isSitting = true; // Mark the dog as sitting
-            sittingTimer = sittingDuration; // Reset the sitting timer
+            Debug.Log("dog in Idle state");
+        }
+        else 
+        {
+            Debug.Log("dog not in Idle state");
+        }
+        Debug.Log("Execute MakeDogSit");
+        if (animator != null)
+        {        
+            animator.SetTrigger("SittingStart");
         }
     }
 
-    public void MakeDogWalk()
+    public void MakeDogTransitionSitToIdle()
     {
-        if (animator != null && isSitting)
+        if (animator != null)
         {
-            animator.SetBool("isWalking", true); // Start walking animation
-            isSitting = false; // Mark the dog as walking
+            animator.SetTrigger("SittingCycleToIdle");
+        }
+    }
+
+    public void MakeDogBreathing()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Breathing");
+        }
+    }
+
+    public void MakeDogTransitionBreathingToIdle()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("BreathingToIdle");
         }
     }
 
     public void MakeDogAngry()
     {
-        if (animator != null && !isAngry)
+        if (animator != null)
         {
-            animator.SetTrigger("germanshepherd_AngryCycle"); // Trigger angry animation
-            animator.SetBool("isWalking", false); // Stop walking animation
-            isAngry = true; // Mark the dog as angry
+            animator.SetTrigger("AngryStart");
         }
     }
 
-    public void CalmDog()
+    public void MakeDogTransitionAngryToIdle()
     {
-        if (animator != null && isAngry)
+        if (animator != null)
         {
-            animator.SetBool("isWalking", true); // Resume walking animation
-            isAngry = false; // Mark the dog as calm
+            animator.SetTrigger("AngryCycleToIdle");
         }
     }
+
+    public void MakeDogWagTail()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("WigglingTail");
+        }
+    }
+
+    public void MakeDogTransitionWagTailToIdle()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("WigglingTailToIdle");
+        }
+    }
+
+    public void MakeDogEating()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("EatingStart");
+        }
+    }
+
+    public void MakeDogTransitionEatingToIdle()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("WigglingTailToIdle");
+        }
+    }
+
+
+    public void TransitionToIdle() 
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("Running"))
+        {
+            MakeDogTransitionRunToIdle();
+        }
+        else if (stateInfo.IsName("WalkingNormal"))
+        {
+            MakeDogTransitionWalkingNormalToIdle();
+        }
+        else if (stateInfo.IsName("SittingCycle"))
+        {
+            MakeDogTransitionSitToIdle();
+        }  
+        else if (stateInfo.IsName("Breathing"))
+        {
+            MakeDogTransitionBreathingToIdle();
+        }         
+        else if (stateInfo.IsName("AngryCycle"))
+        {
+            MakeDogTransitionAngryToIdle();
+        }   
+        else if (stateInfo.IsName("WigglingTail"))
+        {
+            MakeDogTransitionWagTailToIdle();
+        }
+        else if (stateInfo.IsName("EatingCycle"))
+        {
+           MakeDogTransitionEatingToIdle();
+        }          
+    }
+
+    public void DefineVoiceCommand() 
+    {
+        Debug.Log("DefineVoiceCommand call");
+        // Define voice commands
+        // commands.Add("sit", MakeDogSit);
+        // commands.Add("wag tail", MakeDogWagTail);
+        // commands.Add("stop", TransitionToIdle);
+        commands.Add("sit", () => Debug.Log("Voice: Sit command received"));
+        commands.Add("wag tail", () => Debug.Log("Voice: Wag tail command received"));
+        commands.Add("stop", () => Debug.Log("Voice: Stop command received"));
+
+    }
+    
 }
