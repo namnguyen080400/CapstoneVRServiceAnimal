@@ -50,7 +50,7 @@ public class VoiceController : MonoBehaviour
                 break;
 
             case "stop_intent":
-                dog.StopFollowing();
+                dog.StopFollowPlayer();
                 break;
 
             case "bark_intent":
