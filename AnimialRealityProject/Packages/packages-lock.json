@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.meta.xr.mrutilitykit": {
-      "version": "74.0.1",
+      "version": "74.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.meta.xr.sdk.core": "74.0.1",
+        "com.meta.xr.sdk.core": "74.0.2",
         "com.unity.textmeshpro": "3.0.6",
         "com.unity.ai.navigation": "1.1.4",
         "com.unity.nuget.newtonsoft-json": "3.0.2"
@@ -13,19 +13,19 @@
       "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.all": {
-      "version": "74.0.2",
+      "version": "74.0.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.meta.xr.sdk.core": "74.0.1",
+        "com.meta.xr.sdk.core": "74.0.2",
         "com.meta.xr.sdk.audio": "74.0.0",
         "com.meta.xr.sdk.voice": "74.0.0",
         "com.meta.xr.simulator": "74.0.0",
-        "com.meta.xr.sdk.haptics": "74.0.1",
-        "com.meta.xr.mrutilitykit": "74.0.1",
+        "com.meta.xr.sdk.haptics": "74.0.2",
+        "com.meta.xr.mrutilitykit": "74.0.2",
         "com.meta.xr.sdk.platform": "74.0.0",
-        "com.meta.xr.sdk.interaction": "74.0.1",
-        "com.meta.xr.sdk.interaction.ovr": "74.0.2"
+        "com.meta.xr.sdk.interaction": "74.0.2",
+        "com.meta.xr.sdk.interaction.ovr": "74.0.3"
       },
       "url": "https://packages.unity.com"
     },
@@ -37,23 +37,23 @@
       "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.core": {
-      "version": "74.0.1",
+      "version": "74.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.haptics": {
-      "version": "74.0.1",
+      "version": "74.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.meta.xr.sdk.core": "74.0.1"
+        "com.meta.xr.sdk.core": "74.0.2"
       },
       "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.interaction": {
-      "version": "74.0.1",
+      "version": "74.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -63,12 +63,12 @@
       "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.interaction.ovr": {
-      "version": "74.0.2",
+      "version": "74.0.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.meta.xr.sdk.core": "74.0.1",
-        "com.meta.xr.sdk.interaction": "74.0.1"
+        "com.meta.xr.sdk.core": "74.0.2",
+        "com.meta.xr.sdk.interaction": "74.0.2"
       },
       "url": "https://packages.unity.com"
     },
@@ -122,7 +122,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ai.navigation": {
-      "version": "1.1.5",
+      "version": "1.1.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -135,8 +135,8 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.services.analytics": "1.0.4",
-        "com.unity.ugui": "1.0.0"
+        "com.unity.ugui": "1.0.0",
+        "com.unity.services.analytics": "1.0.4"
       },
       "url": "https://packages.unity.com"
     },
@@ -230,6 +230,15 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.postprocessing": {
+      "version": "3.4.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.physics": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.purchasing": {
       "version": "4.11.0",
       "depth": 0,
@@ -277,9 +286,9 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.androidjni": "1.0.0",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
-        "com.unity.modules.androidjni": "1.0.0"
+        "com.unity.modules.unitywebrequest": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -400,7 +409,7 @@
     },
     "com.unity.xr.legacyinputhelpers": {
       "version": "2.1.12",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.vr": "1.0.0",

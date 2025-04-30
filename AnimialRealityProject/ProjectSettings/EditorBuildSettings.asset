@@ -4,8 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/GermanShepherdScene.unity
+    guid: 9ed42dce1ab327a42b1b97301abf04d3
   m_configObjects:
-    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: e4668c0072f6f634785c1aaa14fbd0dd, type: 2}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: bb812be4a314cf6468338cbe4200d635, type: 2}
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: e74b3689712253c4cb42a895bc83c806, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: c20dd109151141f4e9f37c812c2053c8, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: eb1aa691d7a6efe49b35250c5bb2d910, type: 2}

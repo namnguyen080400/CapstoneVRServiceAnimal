@@ -16,3 +16,11 @@ The following packages were added:
   com.unity.test-framework@1.1.33
   com.unity.xr.legacyinputhelpers@2.1.12
   com.unity.ai.navigation@1.1.5
+
+=== Mon Apr 21 21:15:50 2025
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.postprocessing@3.4.0
