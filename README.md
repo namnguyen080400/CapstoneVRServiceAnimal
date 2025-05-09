@@ -9,27 +9,50 @@ This Unity project features a voice- and gesture-controlled virtual dog that res
 - Passthrough AR (real-world background)
 
 **Voice Commands**
+
 go left -> Dog walks left
+
 go right -> Dog walks right
+
 go forward -> Dog walks forward
+
 go backward -> Dog walks backward
+
 go eat -> Dog eats
+
 pick the ball -> Dog walks to and picks up the ball
+
 move ball -> Ball moves, dog fetches it
+
 I feel sad -> Dog whines and approaches
+
 bad dog -> Dog barks loudly
+
 wag tail -> Dog wags tail
+
 sit down -> Dog sits
+
 follow me -> Dog follows you
+
 come here -> Dog walks to you
 
+
 **Hand Gesture Mapping**
+
 Open Palm -> Dog walks to you
+
 Thumbs Up -> Dog sits
+
 Thumbs Down -> Dog barks angrily
+
 Shaka (🤙) -> Dog wags tail
 
+
 **In Progress / Planned Features**
+
 Dog responds with speech bubbles (using AI-generated replies)
+
 Physics-based ball grab & throw (not yet implemented)
+
 More natural dog movement and animation blending
+
