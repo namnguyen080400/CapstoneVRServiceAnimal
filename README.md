@@ -1,4 +1,5 @@
 This Unity project features a voice- and gesture-controlled virtual dog that responds to natural language and hand gestures in a Passthrough XR environment. Built with XR Interaction Toolkit, Wit.ai, and Meta XR SDK, the dog can follow commands, perform actions, and interact with the player.
+
 **Features Implemented**
 - Voice control via Wit.ai
 - Hand gesture recognition using XR Hands
