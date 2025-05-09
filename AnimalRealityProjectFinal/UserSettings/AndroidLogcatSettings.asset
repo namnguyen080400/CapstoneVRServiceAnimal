@@ -1,0 +1,171 @@
+{
+    "m_SelectedDeviceId": "2G0YC5ZGB804VN",
+    "m_SelectedProcess": {
+        "deviceId": "",
+        "name": "",
+        "processId": 0,
+        "exited": false
+    },
+    "m_SelectedPriority": 0,
+    "m_KnownProcessesForSerialization": [
+        {
+            "deviceId": "1WMHHA682K2114",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 20846,
+            "exited": true
+        },
+        {
+            "deviceId": "1WMHHA682K2114",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 24565,
+            "exited": true
+        },
+        {
+            "deviceId": "1WMHHA682K2114",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 31822,
+            "exited": true
+        },
+        {
+            "deviceId": "1WMHHA682K2114",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 24533,
+            "exited": true
+        },
+        {
+            "deviceId": "1WMHHA682K2114",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 22582,
+            "exited": false
+        },
+        {
+            "deviceId": "340YC10G8K01RC",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 19666,
+            "exited": true
+        },
+        {
+            "deviceId": "340YC10G8K01RC",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 24521,
+            "exited": true
+        },
+        {
+            "deviceId": "340YC10G8K01RC",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 31895,
+            "exited": true
+        },
+        {
+            "deviceId": "340YC10G8K01RC",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 3800,
+            "exited": true
+        },
+        {
+            "deviceId": "340YC10G8K01RC",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 18644,
+            "exited": false
+        },
+        {
+            "deviceId": "2G0YC5ZGB804VN",
+            "name": "com.DefaultCompany.AnimialRealityProject",
+            "processId": 15568,
+            "exited": true
+        }
+    ],
+    "m_Tags": {
+        "m_Entries": [
+            {
+                "m_Name": "Filter by all listed tags",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "No Filter",
+                "m_Selected": true
+            },
+            {
+                "m_Name": "",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "Tag Control...",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "Unity",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "CRASH",
+                "m_Selected": false
+            }
+        ]
+    },
+    "m_ExtraWindowState": {
+        "Type": 0,
+        "Height": 0.0
+    },
+    "m_MemoryViewerState": {
+        "MemoryWindowWidth": 170.0,
+        "MemoryTypeEnabled": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ],
+        "MemoryGroup": 2,
+        "AutoCapture": true
+    },
+    "m_FilterOptions": {
+        "m_Filter": "",
+        "m_UseRegularExpressions": true,
+        "m_MatchCase": false
+    },
+    "m_SymbolPaths": [],
+    "m_CaptureVideoSettings": {
+        "TimeLimitEnabled": false,
+        "TimeLimit": 180,
+        "VideoSizeEnabled": false,
+        "VideoSizeX": 1280,
+        "VideoSizeY": 720,
+        "BitRateEnabled": false,
+        "BitRateK": 20000,
+        "DisplayIdEnabled": false,
+        "DisplayId": ""
+    },
+    "m_ScreenCaptureSettings": {
+        "Mode": 0,
+        "m_LastSaveLocation": [
+            "C:\\tmp\\CapstoneVRServiceAnimal\\AnimialRealityProject",
+            "C:\\tmp\\CapstoneVRServiceAnimal\\AnimialRealityProject"
+        ]
+    },
+    "m_QueryLayoutSettings": {
+        "LastLayoutSaveLocation": "",
+        "LastScreenshotSaveLocation": ""
+    },
+    "m_InputSettings": {
+        "ShiftModifier": false,
+        "SendText": "",
+        "PosixKillSignal": 0,
+        "TargetProcess": {
+            "deviceId": "",
+            "name": "",
+            "processId": 0,
+            "exited": false
+        }
+    },
+    "m_AutoScroll": 2
+}
