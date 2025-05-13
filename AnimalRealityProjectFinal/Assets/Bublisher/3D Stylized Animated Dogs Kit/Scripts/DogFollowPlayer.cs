@@ -6,6 +6,10 @@ public class DogFollowPlayer : MonoBehaviour
 {
     public Transform player; // Drag XR Rig or Main Camera here
     public bool isFollowing = false;
+<<<<<<< Updated upstream
+=======
+    public DogMovement dog;
+>>>>>>> Stashed changes
     private NavMeshAgent agent;
     //private Animator animator;
     private Transform headsetTransform;
@@ -57,7 +61,11 @@ public class DogFollowPlayer : MonoBehaviour
         //Debug.Log($"Nam11 isFollowing = {isFollowing}");
         // Debug.Log("Nam11 Camera localPosition = " + player.localPosition);
         // Debug.Log("Nam11 Camera worldPosition = " + player.position);
+<<<<<<< Updated upstream
         if (agent == null || !isFollowing || Camera.main == null) 
+=======
+        if (agent == null || !isFollowing || Camera.main == null || dog.isBusy) 
+>>>>>>> Stashed changes
         {
             return;
         }
@@ -73,6 +81,10 @@ public class DogFollowPlayer : MonoBehaviour
         if (agent.isOnNavMesh && distance > stoppingDistanceFromPlayer) 
         {
             Debug.Log($"Nam11 Set SetDestination = {targetPosition}");
+<<<<<<< Updated upstream
+=======
+            agent.speed = 1.0f;
+>>>>>>> Stashed changes
             agent.SetDestination(targetPosition);
         }
             

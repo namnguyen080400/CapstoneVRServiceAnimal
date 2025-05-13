@@ -16,7 +16,11 @@ public class WitVoiceCommandHandler : MonoBehaviour
     private AudioClip recording;
     private const int SAMPLE_RATE = 16000;
     private string micName;
+<<<<<<< Updated upstream
     
+=======
+
+>>>>>>> Stashed changes
     
     void Start()
     {
@@ -72,7 +76,11 @@ public class WitVoiceCommandHandler : MonoBehaviour
     IEnumerator WaitForSpeech()
     {
         Debug.Log("Waiting for user to start speaking...");
+<<<<<<< Updated upstream
         while (GetMicVolume() < 0.01f) // threshold for voice detection
+=======
+        while (GetMicVolume() < 0.05f) // threshold for voice detection
+>>>>>>> Stashed changes
         {
             yield return null;
         }
@@ -210,7 +218,12 @@ public class WitVoiceCommandHandler : MonoBehaviour
             else if (json.ToLower().Contains("stop"))
             {
                 Debug.Log("Nam11 Stop command recognized!");
+<<<<<<< Updated upstream
                 dog.MakeDogStopTransitionToIdle();
+=======
+                dog.MakeDogStop();
+
+>>>>>>> Stashed changes
             }
             else if (json.ToLower().Contains("eat") || json.ToLower().Contains("go eat") 
                     || json.ToLower().Contains("eating") || json.ToLower().Contains("time to eat"))
@@ -232,8 +245,12 @@ public class WitVoiceCommandHandler : MonoBehaviour
                 Debug.Log("Nam11 Fetch command recognized!");
                 dog.MakeDogFetchBall(tennisBall, player);
             }
+<<<<<<< Updated upstream
             else if (json.ToLower().Contains("throw") || json.ToLower().Contains("throw ball")
                     || json.ToLower().Contains("move ball") || json.ToLower().Contains("get it again")
+=======
+            else if (json.ToLower().Contains("move ball") || json.ToLower().Contains("get it again")
+>>>>>>> Stashed changes
                     || json.ToLower().Contains("get ball again") || json.ToLower().Contains("get the ball again"))
             {
                 Debug.Log("Nam11 Throw ball command recognized!");
@@ -252,14 +269,98 @@ public class WitVoiceCommandHandler : MonoBehaviour
                 playerPosition.y = 0;
                 dog.MakeDogComfortMe(playerPosition);
             }
+<<<<<<< Updated upstream
 
             else 
             {
                 Debug.Log("Nam11 No recognized command found.");
+=======
+            else if (json.ToLower().Contains("go play") || json.ToLower().Contains("go playing"))
+            {
+                Debug.Log("Nam11 Go playing command recognized!");
+                dog.MakeDogWander();
+            }
+            else if (json.ToLower().Contains("let play math game") || json.ToLower().Contains("let play game") ||
+                json.ToLower().Contains("let's play math game") || json.ToLower().Contains("let's play game")
+                || json.ToLower().Contains("time to play")) 
+            {
+                Vector3 playerPosition = player.position;
+                playerPosition.y = 0;
+                dog.MathGameSetup(playerPosition, "let play math game");
+            }
+            else if (json.ToLower().Contains("are you ready"))
+            {
+                Vector3 playerPosition = player.position;
+                playerPosition.y = 0;
+                dog.MathGameSetup(playerPosition, "are you ready");
+            }
+            else if (json.ToLower().Contains("let go") || json.ToLower().Contains("let's go"))
+            {
+                Vector3 playerPosition = player.position;
+                playerPosition.y = 0;
+                dog.MathGameSetup(playerPosition, "let go");
+            }
+            else if (json.ToLower().Contains("incorrect") || json.ToLower().Contains("wrong") 
+            || json.ToLower().Contains("very close") || json.ToLower().Contains("still wrong")
+            || json.ToLower().Contains("it's close") || json.ToLower().Contains("its close")
+            || json.ToLower().Contains("it close") || json.ToLower().Contains("oh boy"))
+            {
+                dog.DogIncorrectMathRespond();
+            }
+            else if (json.ToLower().Contains("correct") || json.ToLower().Contains("good boy")
+                    || json.ToLower().Contains("good job") || json.ToLower().Contains("smart"))
+            {
+                dog.DogCorrectMathRespond();
+            }
+            else if (json.ToLower().Contains("try again") || json.ToLower().Contains("try it again") ||
+                    json.ToLower().Contains("one more time") || json.ToLower().Contains("another shot"))
+            {
+                dog.DogTryPreviousMathProblemAgain();
+            }
+            else if (json.ToLower().Contains("let take a break") || json.ToLower().Contains("take a break")
+                    || json.ToLower().Contains("break time"))
+            {
+                dog.DogEndMathSection();
+            } 
+            else 
+            {
+                string cleanedText = json.ToLower().Trim();
+                Debug.Log($"Nam11: Math expression cleanedText = {cleanedText}");
+                string expression = ExtractMathExpression(cleanedText);
+                if (expression != "") 
+                {
+                    int result = Mathf.Clamp(dog.predefinedMathExpressions[expression], 0, 10); // limit barking
+                    Debug.Log($"Nam11: Found predefined math expression '{expression}' = {result}");
+                    dog.MakeDogDoMath(expression);
+                    //yield break;
+                }
+                else 
+                {
+                    Debug.Log("Nam11 No recognized command found.");
+                }
+                
+>>>>>>> Stashed changes
             }            
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    private string ExtractMathExpression(string jsonString) 
+    {
+        string result = "";
+        foreach (string key in dog.predefinedMathExpressions.Keys) 
+        {
+            if (jsonString.Contains(key)) 
+            {
+                Debug.Log($"Nam11: ExtractMathExpression() = {key}");
+                return key;
+            }
+        } 
+        return result;
+    } 
+
+>>>>>>> Stashed changes
     bool IsLoudEnough(AudioClip clip, float threshold = 0.01f)
     {
         float[] samples = new float[clip.samples];
