@@ -3,6 +3,10 @@ using UnityEngine.Networking;
 using System.Collections;
 using TMPro;
 using Meta.XR.MRUtilityKitSamples.BouncingBall;
+using System;
+using Newtonsoft.Json.Linq;
+
+
 
 public class WitVoiceCommandHandler : MonoBehaviour
 {
@@ -19,7 +23,9 @@ public class WitVoiceCommandHandler : MonoBehaviour
     private string micName;
     private BouncingcBallMgr bouncingcBallMgr;
 
-    
+    public SpeechBubble speechBubble;
+    private ChatHandler chatHandler;
+
     void Start()
     {
         //StartCoroutine(LoopRecording());
@@ -35,6 +41,12 @@ public class WitVoiceCommandHandler : MonoBehaviour
         bouncingcBallMgr = FindObjectOfType<BouncingcBallMgr>();
 
         //recording = Microphone.Start(null, true, 10, SAMPLE_RATE); // 10-second loop buffer
+
+        if (speechBubble == null)
+            speechBubble = FindObjectOfType<SpeechBubble>();
+
+        chatHandler = FindObjectOfType<ChatHandler>();
+
         StartCoroutine(LoopListening());
         
     }
@@ -159,157 +171,187 @@ public class WitVoiceCommandHandler : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogError("Nam11 Wit.ai Error: " + request.error);
+            yield break;
         }
-        else
+
+        string json = request.downloadHandler.text;
+        Debug.Log("Nam11 Raw JSON Response:\n" + json);
+
+        string recognizedText = json.ToLower();
+
+        if (json.ToLower().Contains("stop chat") || json.ToLower().Contains("stop talking") ||
+            json.ToLower().Contains("end chat") || json.ToLower().Contains("bye"))
         {
-            string json = request.downloadHandler.text;
-            Debug.Log("Nam11 Raw JSON Response:\n" + json);
+            Debug.Log("Nam11 Detected stop chat command.");
+            chatHandler?.EndChat();
+            dog?.MakeDogWander();
+            speechBubble?.ShowMessage("Chat mode ended. You can talk to me again later!");
+            yield break;
+        }
 
-            if (json.ToLower().Contains("sit") || json.ToLower().Contains("set down") || json.ToLower().Contains("down"))
-            {
-                Debug.Log("Nam11 Dog sit command recognized!");
-                dog.MakeDogSit();
-            }
-            else if (json.ToLower().Contains("wag"))
-            {
-                Debug.Log("Nam11 Wag tail command recognized!");
-                dog.MakeDogWagTail();
-            }
-            else if (json.ToLower().Contains("walk") || json.ToLower().Contains("go forward"))
-            {
-                Debug.Log("Nam11 Walk command recognized!");
-                dog.MakeDogWalkForward();
-            }
-            else if (json.ToLower().Contains("go back") || json.ToLower().Contains("go backward"))
-            {
-                Debug.Log("Nam11 Move back command recognized!");
-                dog.MakeDogMoveBackward();
-            }
-            else if (json.ToLower().Contains("go left"))
-            {
-                Debug.Log("Nam11 Move left command recognized!");
-                dog.MakeDogMoveLeft();
-            }
-            else if (json.ToLower().Contains("go right"))
-            {
-                Debug.Log("Nam11 Move right command recognized!");
-                dog.MakeDogMoveRight();
-            }
-            else if (json.ToLower().Contains("come here") || json.ToLower().Contains("back here"))
-            {
-                Debug.Log("Nam11 Come here command recognized!");
-                dog.MakeDogComeHere(); // Pass the player transform
-            }
-            else if (json.ToLower().Contains("go there") || json.ToLower().Contains("move there")
-                    || json.ToLower().Contains("there") || json.ToLower().Contains("over there"))
-            {
-                Debug.Log("Nam11 Go there command recognized!");
-                if (bouncingcBallMgr != null)
-                {
-                    dog.MakeDogGoThere(bouncingcBallMgr.currentLaserTarget); // Call the new method on DogMovement
-                }
-                else
-                {
-                    Debug.LogError("Nam11 bouncingcBallMgr is null");
-                }
-            }
-            else if (json.ToLower().Contains("stop"))
-            {
-                Debug.Log("Nam11 Stop command recognized!");
-                dog.MakeDogStop();
+        if (chatHandler != null && chatHandler.IsChatMode())
+        {
+            yield return StartCoroutine(chatHandler.SendMessageToChatGPT(recognizedText));
+            yield break;
+        }
 
-            }
-            else if (json.ToLower().Contains("eat") || json.ToLower().Contains("go eat")
-                    || json.ToLower().Contains("eating") || json.ToLower().Contains("time to eat"))
+        if (json.ToLower().Contains("let's talk") || json.ToLower().Contains("lets talk") ||
+            json.ToLower().Contains("let's chat") || json.ToLower().Contains("lets chat"))
+        {
+            chatHandler?.StartChat();
+            dog.MakeDogComeHere(); 
+            dog.MakeDogSit();
+            speechBubble?.ShowMessage("Chat mode started. You can now talk to me!");
+            yield break;
+        }
+
+        
+
+
+        //behavior commands
+        if (json.ToLower().Contains("sit") || json.ToLower().Contains("set down") || json.ToLower().Contains("down"))
+        {
+            Debug.Log("Nam11 Dog sit command recognized!");
+            dog.MakeDogSit();
+        }
+        else if (json.ToLower().Contains("wag"))
+        {
+            Debug.Log("Nam11 Wag tail command recognized!");
+            dog.MakeDogWagTail();
+        }
+        else if (json.ToLower().Contains("walk") || json.ToLower().Contains("go forward"))
+        {
+            Debug.Log("Nam11 Walk command recognized!");
+            dog.MakeDogWalkForward();
+        }
+        else if (json.ToLower().Contains("go back") || json.ToLower().Contains("go backward"))
+        {
+            Debug.Log("Nam11 Move back command recognized!");
+            dog.MakeDogMoveBackward();
+        }
+        else if (json.ToLower().Contains("go left"))
+        {
+            Debug.Log("Nam11 Move left command recognized!");
+            dog.MakeDogMoveLeft();
+        }
+        else if (json.ToLower().Contains("go right"))
+        {
+            Debug.Log("Nam11 Move right command recognized!");
+            dog.MakeDogMoveRight();
+        }
+        else if (json.ToLower().Contains("come here") || json.ToLower().Contains("back here") || json.ToLower().Contains("hey silver") || json.ToLower().Contains("silver"))
+        {
+            Debug.Log("Nam11 Come here command recognized!");
+            dog.MakeDogComeHere(); // Pass the player transform
+        }
+        else if (json.ToLower().Contains("go there") || json.ToLower().Contains("move there")
+                || json.ToLower().Contains("there") || json.ToLower().Contains("over there"))
+        {
+            Debug.Log("Nam11 Go there command recognized!");
+            if (bouncingcBallMgr != null)
             {
-                Debug.Log("Nam11 Eat command recognized!");
-                dog.MakeDogGoEat(curryPlate);
-            }
-            else if (json.ToLower().Contains("bad boy") || json.ToLower().Contains("stupid dog")
-                    || json.ToLower().Contains("bad dog"))
-            {
-                Debug.Log("Nam11 MakeDogAngry command recognized!");
-                dog.MakeDogAngry(); // Pass the player transform
-            }
-            else if (json.ToLower().Contains("fetch") || json.ToLower().Contains("get ball")
-                    || json.ToLower().Contains("go get ball") || json.ToLower().Contains("get the ball"))
-            {
-                Debug.Log("Nam11 Fetch command recognized!");
-                bouncingcBallMgr.Reset();
-                dog.MakeDogFetchBall(tennisBall);
-            }
-            else if (json.ToLower().Contains("move ball") || json.ToLower().Contains("get it again")
-                    || json.ToLower().Contains("get ball again") || json.ToLower().Contains("get the ball again"))
-            {
-                Debug.Log("Nam11 Throw ball command recognized!");
-                dog.ThrowBallAndFetch(tennisBall, player);
-            }
-            else if (json.ToLower().Contains("follow me") || json.ToLower().Contains("go with me"))
-            {
-                Debug.Log("Nam11 Follow me command recognized!");
-                dog.MakeDogFollowPlayer();
-            }
-            else if (json.ToLower().Contains("i feel sad") || json.ToLower().Contains("i'm sad")
-                    || json.ToLower().Contains("i feel bad") || json.ToLower().Contains("i have a bad day"))
-            {
-                Debug.Log("Nam11 Comfort me command recognized!");
-                dog.MakeDogComfortMe();
-            }
-            else if (json.ToLower().Contains("go play") || json.ToLower().Contains("go playing"))
-            {
-                Debug.Log("Nam11 Go playing command recognized!");
-                dog.MakeDogWander();
-            }
-            else if (json.ToLower().Contains("let play math game") || json.ToLower().Contains("let play game") ||
-                json.ToLower().Contains("let's play math game") || json.ToLower().Contains("let's play game")
-                || json.ToLower().Contains("time to play"))
-            {
-                dog.MathGameSetup("let play math game");
-            }
-            else if (json.ToLower().Contains("are you ready"))
-            {
-                dog.MathGameSetup("are you ready");
-            }
-            else if (json.ToLower().Contains("incorrect") || json.ToLower().Contains("wrong")
-            || json.ToLower().Contains("very close") || json.ToLower().Contains("still wrong")
-            || json.ToLower().Contains("it's close") || json.ToLower().Contains("its close")
-            || json.ToLower().Contains("it close") || json.ToLower().Contains("oh boy"))
-            {
-                dog.DogIncorrectMathRespond();
-            }
-            else if (json.ToLower().Contains("correct") || json.ToLower().Contains("good boy")
-                    || json.ToLower().Contains("good job") || json.ToLower().Contains("smart"))
-            {
-                dog.DogCorrectMathRespond();
-            }
-            else if (json.ToLower().Contains("try again") || json.ToLower().Contains("try it again") ||
-                    json.ToLower().Contains("one more time") || json.ToLower().Contains("another shot"))
-            {
-                dog.DogTryPreviousMathProblemAgain();
-            }
-            else if (json.ToLower().Contains("let take a break") || json.ToLower().Contains("take a break")
-                    || json.ToLower().Contains("break time"))
-            {
-                dog.DogEndMathSection();
+                dog.MakeDogGoThere(bouncingcBallMgr.currentLaserTarget); // Call the new method on DogMovement
             }
             else
             {
-                string cleanedText = json.ToLower().Trim();
-                Debug.Log($"Nam11: Math expression cleanedText = {cleanedText}");
-                string expression = ExtractMathExpression(cleanedText);
-                if (expression != "")
-                {
-                    int result = Mathf.Clamp(dog.predefinedMathExpressions[expression], 0, 10); // limit barking
-                    Debug.Log($"Nam11: Found predefined math expression '{expression}' = {result}");
-                    dog.MakeDogDoMath(expression);
-                    //yield break;
-                }
-                else
-                {
-                    Debug.Log("Nam11 No recognized command found.");
-                }
+                Debug.LogError("Nam11 bouncingcBallMgr is null");
+            }
+        }
+        else if (json.ToLower().Contains("stop"))
+        {
+            Debug.Log("Nam11 Stop command recognized!");
+            dog.MakeDogStop();
 
-            }            
+        }
+        else if (json.ToLower().Contains("eat") || json.ToLower().Contains("go eat")
+                || json.ToLower().Contains("eating") || json.ToLower().Contains("time to eat"))
+        {
+            Debug.Log("Nam11 Eat command recognized!");
+            dog.MakeDogGoEat(curryPlate);
+        }
+        else if (json.ToLower().Contains("bad boy") || json.ToLower().Contains("stupid dog")
+                || json.ToLower().Contains("bad dog"))
+        {
+            Debug.Log("Nam11 MakeDogAngry command recognized!");
+            dog.MakeDogAngry(); // Pass the player transform
+        }
+        else if (json.ToLower().Contains("fetch") || json.ToLower().Contains("get ball")
+                || json.ToLower().Contains("go get ball") || json.ToLower().Contains("get the ball"))
+        {
+            Debug.Log("Nam11 Fetch command recognized!");
+            dog.MakeDogFetchBall(tennisBall);
+        }
+        else if (json.ToLower().Contains("move ball") || json.ToLower().Contains("get it again")
+                || json.ToLower().Contains("get ball again") || json.ToLower().Contains("get the ball again"))
+        {
+            Debug.Log("Nam11 Throw ball command recognized!");
+            dog.ThrowBallAndFetch(tennisBall, player);
+        }
+        else if (json.ToLower().Contains("follow me") || json.ToLower().Contains("go with me"))
+        {
+            Debug.Log("Nam11 Follow me command recognized!");
+            dog.MakeDogFollowPlayer();
+        }
+        else if (json.ToLower().Contains("i feel sad") || json.ToLower().Contains("i'm sad")
+                || json.ToLower().Contains("i feel bad") || json.ToLower().Contains("i have a bad day"))
+        {
+            Debug.Log("Nam11 Comfort me command recognized!");
+            dog.MakeDogComfortMe();
+        }
+        else if (json.ToLower().Contains("go play") || json.ToLower().Contains("go playing"))
+        {
+            Debug.Log("Nam11 Go playing command recognized!");
+            dog.MakeDogWander();
+        }
+        else if (json.ToLower().Contains("let play math game") || json.ToLower().Contains("let play game") ||
+            json.ToLower().Contains("let's play math game") || json.ToLower().Contains("let's play game")
+            || json.ToLower().Contains("time to play"))
+        {
+            dog.MathGameSetup("let play math game");
+        }
+        else if (json.ToLower().Contains("are you ready"))
+        {
+            dog.MathGameSetup("are you ready");
+        }
+        else if (json.ToLower().Contains("incorrect") || json.ToLower().Contains("wrong")
+        || json.ToLower().Contains("very close") || json.ToLower().Contains("still wrong")
+        || json.ToLower().Contains("it's close") || json.ToLower().Contains("its close")
+        || json.ToLower().Contains("it close") || json.ToLower().Contains("oh boy"))
+        {
+            dog.DogIncorrectMathRespond();
+        }
+        else if (json.ToLower().Contains("correct") || json.ToLower().Contains("good boy")
+                || json.ToLower().Contains("good job") || json.ToLower().Contains("smart"))
+        {
+            dog.DogCorrectMathRespond();
+        }
+        else if (json.ToLower().Contains("try again") || json.ToLower().Contains("try it again") ||
+                json.ToLower().Contains("one more time") || json.ToLower().Contains("another shot"))
+        {
+            dog.DogTryPreviousMathProblemAgain();
+        }
+        else if (json.ToLower().Contains("let take a break") || json.ToLower().Contains("take a break")
+                || json.ToLower().Contains("break time"))
+        {
+            dog.DogEndMathSection();
+        }
+        else
+        {
+            string cleanedText = json.ToLower().Trim();
+            Debug.Log($"Nam11: Math expression cleanedText = {cleanedText}");
+            string expression = ExtractMathExpression(cleanedText);
+            if (expression != "")
+            {
+                int result = Mathf.Clamp(dog.predefinedMathExpressions[expression], 0, 10); // limit barking
+                Debug.Log($"Nam11: Found predefined math expression '{expression}' = {result}");
+                dog.MakeDogDoMath(expression);
+                yield break;
+            }
+            else
+            {
+                Debug.Log("Nam11 No recognized command found.");
+            }
+
         }
     }
 

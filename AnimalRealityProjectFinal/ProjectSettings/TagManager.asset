@@ -3,7 +3,32 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - QDSUIToggleSwitch
+  - QDSUITooltip
+  - QDSUISharedThemeColor
+  - QDSUIAccentColor
+  - QDSUIBorderlessButton
+  - QDSUIToggleButton
+  - QDSUISecondaryButton
+  - QDSUIToggleBorderlessButton
+  - QDSUIIcon
+  - QDSUITextSecondaryColor
+  - QDSUIBackplateGradient
+  - SamplesInfoPanel
+  - QDSUISection
+  - Locomotion
+  - PassThroughButton
+  - LocoButton
+  - LocoText
+  - PassThrough
+  - QDSUIDestructiveButton
+  - QDSUIPrimaryButton
+  - QDSUITextInvertedColor
+  - QDSUITextSecondaryInvertedColor
+  - QDSUIToggleCheckboxRadio
+  - QDSUITextInputField
+  - PlayerHand
   layers:
   - Default
   - TransparentFX

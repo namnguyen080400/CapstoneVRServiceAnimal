@@ -22,6 +22,8 @@ public class DogMovement : MonoBehaviour
     public AudioSource angryDogSound;
     public AudioSource singleBarkSoundMath;
     public AudioSource incorrectMathSorrySound;
+    public AudioSource eatingSound;
+
     public bool isBusy = false;
     public bool isPlayingMath = false;
     public const int WAIT_CYCLE = 40;
@@ -47,9 +49,6 @@ public class DogMovement : MonoBehaviour
     private List<int> dogAnswers;
     private string lastMathQuestion = "";
     private Queue<Transform> ballDoneQueue = new();
-
-    BouncingcBallMgr bouncingcBallMgr; 
-
     public Dictionary<string, int> predefinedMathExpressions = new Dictionary<string, int>()
     {
         { "one plus one", 2 }, { "one plus two", 3 }, { "one plus three", 1 },
@@ -126,7 +125,6 @@ public class DogMovement : MonoBehaviour
         dogFollowPlayer = GetComponent<DogFollowPlayer>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         isBusy = false;
-        bouncingcBallMgr = FindObjectOfType<BouncingcBallMgr>();
         randomRoamCoroutine = StartCoroutine(RandomRoamingLoop());
         // You can add Android-compatible microphone code here later
         Debug.Log("Nam11 Animator = " + animator);
@@ -141,76 +139,65 @@ public class DogMovement : MonoBehaviour
     public void MakeDogSit()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogSitPrivate());
     }
 
     public void MakeDogWagTail()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogWagTailPrivate());
     }
 
     public void MakeDogAngry()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogAngryPrivate());
     }
 
     public void MakeDogStopTransitionToIdle()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         StartCoroutine(MakeDogStopTransitionToIdlePrivate());
     }
 
     public void MakeDogWalkForward()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogWalkForwardPrivate());
     }
 
     public void MakeDogComeHere()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogComeHerePrivate());
     }
 
     public void MakeDogMoveLeft()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogMoveLeftPrivate());
     }
 
     public void MakeDogMoveRight()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogMoveRightPrivate());
     }
 
     public void MakeDogMoveBackward()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogMoveBackwardPrivate());
     }
 
     public void MakeDogGoThere(Vector3 destination)
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogGoTherePrivate(destination));
     }
     public void MakeDogGoEat(Transform destination)
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogGoEatPrivate(destination));
     }
 
@@ -225,14 +212,12 @@ public class DogMovement : MonoBehaviour
     public void MakeDogFollowPlayer()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogFollowPlayerPrivate());
     }
 
     public void MakeDogComfortMe()
     {
         StopRandomRoaming();
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogComfortMePrivate());
     }
 
@@ -248,13 +233,11 @@ public class DogMovement : MonoBehaviour
         isPlayingMath = false;
         dogAnswers.Clear();
         lastMathQuestion = "";
-        bouncingcBallMgr.Reset(); 
         MakeDogStopTransitionToIdle();
     }
 
     public void MakeDogDoMath(string mathExpression)
     {
-        bouncingcBallMgr.Reset();
         dogActionCoroutine = StartCoroutine(MakeDogDoMathPrivate(mathExpression));
     }
 
@@ -308,7 +291,6 @@ public class DogMovement : MonoBehaviour
         }
 
         StopRandomRoaming();
-
         dogFollowPlayer.isFollowing = false;
         Debug.Log($"Nam11 StopMovement() end dogActionCoroutine = {dogActionCoroutine} nestedrandomRoamCoroutine = {nestedrandomRoamCoroutine} randomRoamCoroutine = {randomRoamCoroutine}");
     }
@@ -845,6 +827,7 @@ public class DogMovement : MonoBehaviour
         nesteddogActionCoroutine = StartCoroutine(enumerator);
         yield return enumerator;
 
+
         Vector3 foodPos = destination.position;
         foodPos.y = 0;
         Vector3 directionToFood = (foodPos - player.position).normalized;
@@ -868,6 +851,18 @@ public class DogMovement : MonoBehaviour
         enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
         nesteddogActionCoroutine = StartCoroutine(enumerator);
         yield return enumerator;
+
+        //play eating sound if it exists
+        if (eatingSound != null && eatingSound.clip != null)
+        {
+            Debug.Log("Nam11: Playing eating sound.");
+            eatingSound.Play();
+            yield return new WaitForSeconds(eatingSound.clip.length); // Wait until the eating sound ends
+        }
+        else
+        {
+            Debug.LogWarning("Nam11: eatingSound or its clip is missing.");
+        }
 
         if (agent != null) agent.enabled = true;
 

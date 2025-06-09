@@ -167,14 +167,11 @@ namespace Meta.XR.MRUtilityKitSamples.BouncingBall
                 dog.MakeDogFetchBall(nextBall.transform, () =>
                 {
                     dogIsFetching = false;
-                    if (nextBall != null)
-                    {
-                        Rigidbody rb = nextBall.GetComponent<Rigidbody>();
-                        rb.isKinematic = true;
-                        rb.velocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-                        rb.WakeUp();
-                    }
+                    Rigidbody rb = nextBall.GetComponent<Rigidbody>();
+                    rb.isKinematic = true;
+                    rb.velocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                    rb.WakeUp();
                 });
 
                 // Wait until the fetch is done
@@ -210,7 +207,7 @@ namespace Meta.XR.MRUtilityKitSamples.BouncingBall
                 yield return null;
             }
 
-            yield return new WaitForSeconds(0.3f); // Optional delay for realism
+            yield return new WaitForSeconds(0.5f); // Optional delay for realism
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             Debug.Log($"Nam11 WaitForBallToSettleAndFetch end ball.position = {ball.transform.position}");
@@ -224,28 +221,6 @@ namespace Meta.XR.MRUtilityKitSamples.BouncingBall
                 BouncingBallLogic destroyBall = ballFetchedQueue.Dequeue();
                 yield return StartCoroutine(destroyBall.DestroyBall(1.0f));
             }
-        }
-
-        public void Reset()
-        {
-            Debug.Log($"Nam11 BouncingBallMgr Reset start");
-            while (ballFetchedQueue.Count > 0)
-            {
-                BouncingBallLogic destroyBall = ballFetchedQueue.Dequeue();
-                StartCoroutine(destroyBall.DestroyBall(0));
-            }
-            while (ballQueue.Count > 0)
-            {
-                BouncingBallLogic destroyBall = ballQueue.Dequeue();
-                StartCoroutine(destroyBall.DestroyBall(0));
-            }
-            fetchInProgress = false;
-            dogIsFetching = false;
-            Debug.Log($"Nam11 BouncingBallMgr Reset end");
-        }
-        public bool DogIsFetching()
-        {
-            return fetchInProgress || dogIsFetching;
         }
     }
 }

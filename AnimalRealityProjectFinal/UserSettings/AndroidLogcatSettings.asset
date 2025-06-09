@@ -1,5 +1,5 @@
 {
-    "m_SelectedDeviceId": "340YC10G8K01RC",
+    "m_SelectedDeviceId": "2G0YC5ZGB804VN",
     "m_SelectedProcess": {
         "deviceId": "",
         "name": "",
@@ -73,6 +73,18 @@
             "name": "com.DefaultCompany.AnimialRealityProject",
             "processId": 15568,
             "exited": true
+        },
+        {
+            "deviceId": "2G0YC5ZGB804VN",
+            "name": "com.DefaultCompany.AnimalRealityProjectFinal",
+            "processId": 16043,
+            "exited": true
+        },
+        {
+            "deviceId": "2G0YC5ZGB804VN",
+            "name": "com.DefaultCompany.AnimalRealityProjectFinal",
+            "processId": 17593,
+            "exited": false
         }
     ],
     "m_Tags": {
@@ -129,7 +141,7 @@
         "AutoCapture": true
     },
     "m_FilterOptions": {
-        "m_Filter": "nam11",
+        "m_Filter": "Dog triggered by touch.",
         "m_UseRegularExpressions": true,
         "m_MatchCase": false
     },

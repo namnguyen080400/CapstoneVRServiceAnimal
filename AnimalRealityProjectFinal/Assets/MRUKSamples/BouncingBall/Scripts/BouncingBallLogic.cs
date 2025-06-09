@@ -147,5 +147,6 @@ namespace Meta.XR.MRUtilityKitSamples.BouncingBall
             Destroy(gameObject);
             Debug.Log($"Nam11 DestroyBall end");
         }
+
     }
 }
