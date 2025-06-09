@@ -58,6 +58,15 @@ namespace UnityEngine.XR.Hands.Samples.GestureSample
         Color m_BackgroundDefaultColor;
         Color m_BackgroundHighlightColor = new Color(0f, 0.627451f, 1f);
 
+        public enum XRFingerShapeType
+        {
+            FullCurl,
+            BaseCurl,
+            TipCurl,
+            Pinch,
+            Spread
+        }
+
         /// <summary>
         /// The hand tracking events component to subscribe to receive updated joint data to be used for gesture detection.
         /// </summary>
@@ -185,6 +194,40 @@ namespace UnityEngine.XR.Hands.Samples.GestureSample
                 m_HandTrackingEvents.handIsTracked &&
                 m_HandShape != null && m_HandShape.CheckConditions(eventArgs) ||
                 m_HandPose != null && m_HandPose.CheckConditions(eventArgs);
+            bool poseMatched = m_HandPose != null && m_HandPose.CheckConditions(eventArgs);
+            bool shapeMatched = m_HandShape != null && m_HandShape.CheckConditions(eventArgs);
+            if ((m_HandShape == null || shapeMatched) && m_HandPose != null && m_HandPose.name.Contains("Open Palm Up"))
+            {
+                Debug.Log($"Nam11 [StaticHandGesture] ShapeMatched: {shapeMatched}, PoseMatched: {poseMatched} m_HandShape = {m_HandShape} m_HandPose = {m_HandPose} m_HandTrackingEvents.handIsTracked = {m_HandTrackingEvents.handIsTracked}");
+
+                // Example: log curl values for each finger
+                foreach (XRHandFingerID fingerID in System.Enum.GetValues(typeof(XRHandFingerID)))
+                {
+                    XRFingerShape shape = eventArgs.hand.CalculateFingerShape(fingerID, XRFingerShapeTypes.FullCurl | XRFingerShapeTypes.BaseCurl | XRFingerShapeTypes.TipCurl | XRFingerShapeTypes.Spread | XRFingerShapeTypes.Pinch);
+
+                    string log = $"[Nam11 FingerShape] Finger: {fingerID}";
+
+                    if (shape.TryGetFullCurl(out var fullCurl))
+                        log += $", FullCurl: {fullCurl:F2}";
+
+                    if (shape.TryGetBaseCurl(out var baseCurl))
+                        log += $", BaseCurl: {baseCurl:F2}";
+
+                    if (shape.TryGetTipCurl(out var tipCurl))
+                        log += $", TipCurl: {tipCurl:F2}";
+
+                    if (shape.TryGetSpread(out var spread))
+                        log += $", Spread: {spread:F2}";
+
+                    if (shape.TryGetPinch(out var pinch))
+                        log += $", Pinch: {pinch:F2}";
+
+                    Debug.Log(log);
+                }
+            }
+
+
+
 
             if (!m_WasDetected && detected)
             {
@@ -221,5 +264,6 @@ namespace UnityEngine.XR.Hands.Samples.GestureSample
 
             m_TimeOfLastConditionCheck = Time.timeSinceLevelLoad;
         }
+
     }
 }

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+// remove script later
 public class DogGestureHandler : MonoBehaviour
 {
     public DogMovement dogMovement;
@@ -11,9 +11,7 @@ public class DogGestureHandler : MonoBehaviour
     {
         if (!hasTriggered)
         {
-            Vector3 target = player.position;
-            target.y = 0f;
-            dogMovement.MakeDogComeHere(target);
+            dogMovement.MakeDogComeHere();
             Debug.Log("Nam11 Dog is coming to you!");
             hasTriggered = true;
         }

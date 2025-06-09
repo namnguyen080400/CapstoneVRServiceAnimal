@@ -4,37 +4,37 @@ using UnityEngine.AI;
 
 public class DogFollowPlayer : MonoBehaviour
 {
-    public Transform player; // Drag XR Rig or Main Camera here
+    [SerializeField] private Transform player; // drag OVRCameraRig.CenterEyeAnchor
     public bool isFollowing = false;
-<<<<<<< Updated upstream
-=======
     public DogMovement dog;
->>>>>>> Stashed changes
     private NavMeshAgent agent;
     //private Animator animator;
-    private Transform headsetTransform;
 
     public float rotationSpeed = 5f;
-    public float stoppingDistanceFromPlayer = .2f;
+    public float stoppingDistanceFromPlayer = .1f;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         //animator = GetComponent<Animator>();
+        /*         if (player == null)
+                {
+                    Debug.LogWarning("Nam11 DogFollowPlayer: Player not set, trying to find Main Camera...");
+                    GameObject cam = GameObject.FindWithTag("MainCamera");
+
+                    if (cam != null)
+                    {
+                        player = cam.transform;
+                        Debug.Log("DogFollowPlayer: Found MainCamera at runtime.");
+                    }
+                    else
+                    {
+                        Debug.LogError("DogFollowPlayer: Could not find MainCamera. Assign player manually.");
+                    }
+                } */
         if (player == null)
         {
-            Debug.LogWarning("Nam11 DogFollowPlayer: Player not set, trying to find Main Camera...");
-            GameObject cam = GameObject.FindWithTag("MainCamera");
-
-            if (cam != null)
-            {
-                player = cam.transform;
-                Debug.Log("DogFollowPlayer: Found MainCamera at runtime.");
-            }
-            else
-            {
-                Debug.LogError("DogFollowPlayer: Could not find MainCamera. Assign player manually.");
-            }
+            Debug.Log("Nam11 cannot find camera at run time.");
         }
         isFollowing = false;
         StartCoroutine(DelayedWarpToNavMesh());
@@ -61,16 +61,13 @@ public class DogFollowPlayer : MonoBehaviour
         //Debug.Log($"Nam11 isFollowing = {isFollowing}");
         // Debug.Log("Nam11 Camera localPosition = " + player.localPosition);
         // Debug.Log("Nam11 Camera worldPosition = " + player.position);
-<<<<<<< Updated upstream
-        if (agent == null || !isFollowing || Camera.main == null) 
-=======
-        if (agent == null || !isFollowing || Camera.main == null || dog.isBusy) 
->>>>>>> Stashed changes
+        if (agent == null || !isFollowing || player == null || dog.isBusy) 
         {
             return;
         }
 
-        Vector3 targetPosition = Camera.main.transform.position;
+        //Vector3 targetPosition = Camera.main.transform.position;
+        Vector3 targetPosition = player.transform.position;
         targetPosition.y = transform.position.y;
         float distance = Vector3.Distance(transform.position, targetPosition);
 
@@ -81,10 +78,7 @@ public class DogFollowPlayer : MonoBehaviour
         if (agent.isOnNavMesh && distance > stoppingDistanceFromPlayer) 
         {
             Debug.Log($"Nam11 Set SetDestination = {targetPosition}");
-<<<<<<< Updated upstream
-=======
             agent.speed = 1.0f;
->>>>>>> Stashed changes
             agent.SetDestination(targetPosition);
         }
             

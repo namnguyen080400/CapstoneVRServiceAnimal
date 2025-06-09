@@ -1,17 +1,9 @@
 {
-<<<<<<< Updated upstream
-    "m_SelectedDeviceId": "2G0YC5ZGB804VN",
+    "m_SelectedDeviceId": "340YC10G8K01RC",
     "m_SelectedProcess": {
         "deviceId": "",
         "name": "",
         "processId": 0,
-=======
-    "m_SelectedDeviceId": "340YC10G8K01RC",
-    "m_SelectedProcess": {
-        "deviceId": "340YC10G8K01RC",
-        "name": "com.DefaultCompany.AnimalRealityProjectFinal",
-        "processId": 17312,
->>>>>>> Stashed changes
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -48,62 +40,32 @@
         },
         {
             "deviceId": "340YC10G8K01RC",
-            "name": "com.DefaultCompany.AnimialRealityProject",
-<<<<<<< Updated upstream
-            "processId": 19666,
-            "exited": true
-        },
-        {
-            "deviceId": "340YC10G8K01RC",
-            "name": "com.DefaultCompany.AnimialRealityProject",
-            "processId": 24521,
-            "exited": true
-        },
-        {
-            "deviceId": "340YC10G8K01RC",
-            "name": "com.DefaultCompany.AnimialRealityProject",
-=======
->>>>>>> Stashed changes
-            "processId": 31895,
-            "exited": true
-        },
-        {
-            "deviceId": "340YC10G8K01RC",
-            "name": "com.DefaultCompany.AnimialRealityProject",
-            "processId": 3800,
-            "exited": true
-        },
-        {
-            "deviceId": "340YC10G8K01RC",
-            "name": "com.DefaultCompany.AnimialRealityProject",
-            "processId": 18644,
-<<<<<<< Updated upstream
-=======
+            "name": "com.DefaultCompany.AnimalRealityProjectFinal",
+            "processId": 11773,
             "exited": true
         },
         {
             "deviceId": "340YC10G8K01RC",
             "name": "com.DefaultCompany.AnimalRealityProjectFinal",
-            "processId": 18100,
+            "processId": 12861,
             "exited": true
         },
         {
             "deviceId": "340YC10G8K01RC",
             "name": "com.DefaultCompany.AnimalRealityProjectFinal",
-            "processId": 23891,
-            "exited": false
+            "processId": 26428,
+            "exited": true
         },
         {
             "deviceId": "340YC10G8K01RC",
             "name": "com.DefaultCompany.AnimalRealityProjectFinal",
-            "processId": 8351,
-            "exited": false
+            "processId": 30026,
+            "exited": true
         },
         {
             "deviceId": "340YC10G8K01RC",
             "name": "com.DefaultCompany.AnimalRealityProjectFinal",
-            "processId": 17312,
->>>>>>> Stashed changes
+            "processId": 30527,
             "exited": false
         },
         {
@@ -167,7 +129,7 @@
         "AutoCapture": true
     },
     "m_FilterOptions": {
-        "m_Filter": "",
+        "m_Filter": "nam11",
         "m_UseRegularExpressions": true,
         "m_MatchCase": false
     },

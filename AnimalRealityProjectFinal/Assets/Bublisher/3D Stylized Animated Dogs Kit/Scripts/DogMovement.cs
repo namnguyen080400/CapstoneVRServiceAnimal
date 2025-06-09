@@ -2,57 +2,54 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
-<<<<<<< Updated upstream
-
-public class DogMovement : MonoBehaviour
-{
-    public float speed = 5f;
-=======
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using Unity.Mathematics;
+using Meta.XR.MRUtilityKit;
+using Unity.AI.Navigation;
+using Meta.XR.MRUtilityKit.SceneDecorator;
+using Meta.XR.MRUtilityKitSamples.BouncingBall;
 
 public class DogMovement : MonoBehaviour
 {
->>>>>>> Stashed changes
     public float rotationSpeed = 500f;
     public Vector3 minBounds = new Vector3(-10f, 0f, -10f);
     public Vector3 maxBounds = new Vector3(10f, 0f, 10f);
     public Transform ballHoldPoint;
     public NavMeshAgent navMeshAgent;
-    public DogFollowPlayer dogFollowPlayer{ get; set; }
+    public DogFollowPlayer dogFollowPlayer { get; set; }
     public AudioSource comfortDogSound;
     public AudioSource angryDogSound;
-<<<<<<< Updated upstream
-    public const int WAIT_CYCLE = 40;
-    public const float MOVING_TIME = 100f;
-    public const float WALKING_SPEED = 5f;
-    public const float JOGGING_SPEED = 7f;
-    public const float RUNNING_SPEED = 10f;
-    public const float WAITING_IN_MS = 0.05f;
-    private Animator animator;
-    private Coroutine moveCoroutine;
-    private AudioSource audioSource;
-=======
     public AudioSource singleBarkSoundMath;
     public AudioSource incorrectMathSorrySound;
     public bool isBusy = false;
     public bool isPlayingMath = false;
     public const int WAIT_CYCLE = 40;
-    public const float MOVING_TIME = 100f;
-    public const float WANDERING_SPEED = 1.0f;
+    public const float MOVING_TIME = 20.0f;
+    public const float WANDERING_SPEED = 0.4f;
     public const float WALKING_SPEED = 1f;
     public const float JOGGING_SPEED = 1f;
-    public const float RUNNING_SPEED = 1f;
-    public const float WAITING_IN_MS = 0.05f;
-    public const float DISTANCE_TO_TARGET = 1f;
-    public const int LAST_DOG_ANSWER  = 0;
+    public const float RUNNING_SPEED = 2f;
+    public const float WAITING_IN_MS = 0.5f;
+    public const float DISTANCE_TO_TARGET = 0.2f;
+    public const int LAST_DOG_ANSWER = 0;
+    public const float BALL_DROPPING_TO_PLAYER_DISTANCE = 0.3f;
+    public const float BALL_FETCHING_TIMEOUT = 10.0f;
+    private const float WANDERING_TIMEOUT = 15.0f;
+    public Transform player;
     private Animator animator;
-    private Coroutine moveCoroutine;
+    private Coroutine dogActionCoroutine = null;
+    private Coroutine nesteddogActionCoroutine = null;
     private AudioSource audioSource;
-    private Coroutine randomRoamCoroutine;
+    private Coroutine randomRoamCoroutine = null;
+    private Coroutine nestedrandomRoamCoroutine = null;
+    private Coroutine nestedTransitionToIdleCoroutine = null;
     private List<int> dogAnswers;
     private string lastMathQuestion = "";
+    private Queue<Transform> ballDoneQueue = new();
+
+    BouncingcBallMgr bouncingcBallMgr; 
+
     public Dictionary<string, int> predefinedMathExpressions = new Dictionary<string, int>()
     {
         { "one plus one", 2 }, { "one plus two", 3 }, { "one plus three", 1 },
@@ -112,29 +109,25 @@ public class DogMovement : MonoBehaviour
 
         { "nine plus one", 10 }
     };
->>>>>>> Stashed changes
 
     void Start()
     {
+        Debug.Log($"Nam11 DogMovement start animator = {animator}");
         animator = GetComponent<Animator>();
-<<<<<<< Updated upstream
-=======
         dogAnswers = new List<int>();
         lastMathQuestion = null;
->>>>>>> Stashed changes
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
             Debug.LogWarning("Nam11 Animator not found on root, found in child: " + animator);
         }
         audioSource = GetComponent<AudioSource>();
-        moveCoroutine = null;
+        //moveCoroutine = null;
         dogFollowPlayer = GetComponent<DogFollowPlayer>();
         navMeshAgent = GetComponent<NavMeshAgent>();
-<<<<<<< Updated upstream
-=======
-        StartRandomRoaming();
->>>>>>> Stashed changes
+        isBusy = false;
+        bouncingcBallMgr = FindObjectOfType<BouncingcBallMgr>();
+        randomRoamCoroutine = StartCoroutine(RandomRoamingLoop());
         // You can add Android-compatible microphone code here later
         Debug.Log("Nam11 Animator = " + animator);
         Debug.Log("Nam11 DogMovement attached to: " + gameObject.name);
@@ -145,181 +138,153 @@ public class DogMovement : MonoBehaviour
         // Reserved for movement input if needed
     }
 
-    public void MakeDogSit() 
+    public void MakeDogSit()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogSitPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogSitPrivate());
     }
 
-    public void MakeDogWagTail() 
+    public void MakeDogWagTail()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogWagTailPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogWagTailPrivate());
     }
 
     public void MakeDogAngry()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogAngryPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogAngryPrivate());
     }
 
-    public void MakeDogStopTransitionToIdle() 
+    public void MakeDogStopTransitionToIdle()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
+        bouncingcBallMgr.Reset();
         StartCoroutine(MakeDogStopTransitionToIdlePrivate());
     }
 
-    public void MakeDogWalk() 
+    public void MakeDogWalkForward()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogWalkPrivate());
-    } 
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogWalkForwardPrivate());
+    }
 
-    public void MakeDogComeHere(Vector3 target)
+    public void MakeDogComeHere()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogComeHerePrivate(target));
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogComeHerePrivate());
     }
 
     public void MakeDogMoveLeft()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogMoveLeftPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogMoveLeftPrivate());
     }
 
     public void MakeDogMoveRight()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogMoveRightPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogMoveRightPrivate());
     }
 
     public void MakeDogMoveBackward()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogMoveBackwardPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogMoveBackwardPrivate());
     }
 
-    public void MakeDogGoThere(Transform destination)
+    public void MakeDogGoThere(Vector3 destination)
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogGoTherePrivate(destination));
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogGoTherePrivate(destination));
     }
     public void MakeDogGoEat(Transform destination)
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogGoEatPrivate(destination));
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogGoEatPrivate(destination));
     }
 
-    public void MakeDogFetchBall(Transform ball, Transform player)
+    public void MakeDogFetchBall(Transform ball, System.Action onComplete = null)
     {
-<<<<<<< Updated upstream
-=======
+        Debug.Log("Nam11 MakeDogFetchBall start");
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogFetchBallPrivate(ball, player));
-    }   
+        dogActionCoroutine = StartCoroutine(MakeDogFetchBallPrivate(ball, onComplete));
+        Debug.Log("Nam11 MakeDogFetchBall end");
+    }
 
-    public void MakeDogFollowPlayer() 
+    public void MakeDogFollowPlayer()
     {
-<<<<<<< Updated upstream
-=======
         StopRandomRoaming();
->>>>>>> Stashed changes
-        StartCoroutine(MakeDogFollowPlayerPrivate());
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogFollowPlayerPrivate());
     }
 
-    public void MakeDogComfortMe(Vector3 targetPosition)
+    public void MakeDogComfortMe()
     {
-<<<<<<< Updated upstream
-        StartCoroutine(MakeDogComfortMePrivate(targetPosition));
-    }
-
-=======
         StopRandomRoaming();
-        StartCoroutine(MakeDogComfortMePrivate(targetPosition));
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogComfortMePrivate());
     }
 
-    public void MakeDogWander() 
+    public void MakeDogWander()
     {
-        StartCoroutine(MakeDogWanderPrivate());
+        dogActionCoroutine = StartCoroutine(MakeDogWanderPrivate());
     }
 
-    public void MakeDogStop() 
+    public void MakeDogStop()
     {
         Debug.Log($"Nam11 MakeDogStop() start isBusy = {isBusy} isPlayingMath = {isPlayingMath}");
         isBusy = false;
         isPlayingMath = false;
         dogAnswers.Clear();
         lastMathQuestion = "";
+        bouncingcBallMgr.Reset(); 
         MakeDogStopTransitionToIdle();
     }
 
-    public void MakeDogDoMath(string mathExpression) 
+    public void MakeDogDoMath(string mathExpression)
     {
-        StartCoroutine(MakeDogDoMathPrivate(mathExpression));
+        bouncingcBallMgr.Reset();
+        dogActionCoroutine = StartCoroutine(MakeDogDoMathPrivate(mathExpression));
     }
 
-    public void DogCorrectMathRespond() 
+    public void DogCorrectMathRespond()
     {
-        StartCoroutine(DogCorrectMathRespondPrivate());
+        dogActionCoroutine = StartCoroutine(DogCorrectMathRespondPrivate());
     }
 
-    public void DogIncorrectMathRespond() 
+    public void DogIncorrectMathRespond()
     {
-        StartCoroutine(DogIncorrectMathRespondPrivate());
+        dogActionCoroutine = StartCoroutine(DogIncorrectMathRespondPrivate());
     }
 
-    public void DogTryPreviousMathProblemAgain() 
+    public void DogTryPreviousMathProblemAgain()
     {
-        StartCoroutine(DogTryPreviousMathProblemAgainPrivate());
-    } 
+        dogActionCoroutine = StartCoroutine(DogTryPreviousMathProblemAgainPrivate());
+    }
 
-    public void DogEndMathSection() 
+    public void DogEndMathSection()
     {
-        StartCoroutine(DogEndMathSectionPrivate());
-        StartRandomRoaming();
+        dogActionCoroutine = StartCoroutine(DogEndMathSectionPrivate());
+        randomRoamCoroutine = StartCoroutine(RandomRoamingLoop());
     }
 
 
-    public void MathGameSetup(Vector3 playerPostion, string setupString) 
+    public void MathGameSetup(string setupString)
     {
-        StartCoroutine(MathGameSetupPrivate(playerPostion, setupString));
+        dogActionCoroutine = StartCoroutine(MathGameSetupPrivate(setupString));
     }
 
->>>>>>> Stashed changes
     //TODO
     // public void MakeDogHappy(Vector3 targetPosition)
     // {
@@ -329,194 +294,206 @@ public class DogMovement : MonoBehaviour
 
     private void StopMovement()
     {
-        Debug.Log("Nam11 StopMovement() start " + moveCoroutine);
-        if (moveCoroutine != null)
+        Debug.Log($"Nam11 StopMovement() start dogActionCoroutine = {dogActionCoroutine} nestedrandomRoamCoroutine = {nestedrandomRoamCoroutine} randomRoamCoroutine = {randomRoamCoroutine}");
+        if (dogActionCoroutine != null)
         {
-            StopCoroutine(moveCoroutine);
-            moveCoroutine = null;
+            StopCoroutine(dogActionCoroutine);
+            dogActionCoroutine = null;
             //dogFollowPlayer.isFollowing = true;
         }
+        if (nesteddogActionCoroutine != null)
+        {
+            StopCoroutine(nesteddogActionCoroutine);
+            nesteddogActionCoroutine = null;
+        }
+
+        StopRandomRoaming();
+
         dogFollowPlayer.isFollowing = false;
-        // Stop NavMeshAgent movement
-        if (navMeshAgent != null && navMeshAgent.enabled)
-        {
-            navMeshAgent.ResetPath();
-            navMeshAgent.velocity = Vector3.zero;
-        }
-        Debug.Log("Nam11 StopMovement() end " + moveCoroutine);
+        Debug.Log($"Nam11 StopMovement() end dogActionCoroutine = {dogActionCoroutine} nestedrandomRoamCoroutine = {nestedrandomRoamCoroutine} randomRoamCoroutine = {randomRoamCoroutine}");
     }
 
-    private IEnumerator MoveToTarget(Vector3 target, string actionAtTarget, float movingSpeed)
-    {
-        float stoppingDistance = 0.5f; // how close is "close enough"
-        transform.LookAt(target);
-        Debug.Log("Nam11 MoveToTarget start " + target + "action at target = " + actionAtTarget);
-        Debug.Log("Nam11 MoveToTarget transform position " + transform.position + "distance to target = " + Vector3.Distance(transform.position, target));
-        Debug.Log("Nam11 MoveToTarget dogFollowPlayer.isFollowing = " + dogFollowPlayer.isFollowing);
-        bool success = false;
-        try
-        {
-            while (Vector3.Distance(transform.position, target) > stoppingDistance)
-            {
-                Vector3 direction = (target - transform.position).normalized;
-                transform.Translate(direction * movingSpeed * Time.deltaTime, Space.World);
-
-                if (direction != Vector3.zero)
+    /*     private IEnumerator MoveToTarget(Vector3 target, string actionAtTarget, float movingSpeed)
                 {
-                    Quaternion lookRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
-                }
-                Debug.Log("Nam11 Move to target loop. Distance to target " + Vector3.Distance(transform.position, target));
-                yield return null;
-            }
-            success = true;
-            Debug.Log("Nam11 MoveToTarget end loop " + target + " actionAtTarget " + actionAtTarget + "dogFollowPlayer.isFollowing = " + dogFollowPlayer.isFollowing);
-        }
-        finally
-        {
-            if (!success)
-            {
-                Debug.LogError("Nam11 MoveToTarget Exception: exited unexpectedly!");
-            }
-        }
+                    float stoppingDistance = 0.5f; // how close is "close enough"
+                    transform.LookAt(target);
+                    Debug.Log("Nam11 MoveToTarget start " + target + "action at target = " + actionAtTarget);
+                    Debug.Log("Nam11 MoveToTarget transform position " + transform.position + "distance to target = " + Vector3.Distance(transform.position, target));
+                    Debug.Log("Nam11 MoveToTarget dogFollowPlayer.isFollowing = " + dogFollowPlayer.isFollowing);
+                    bool success = false;
+                    try
+                    {
+                        while (Vector3.Distance(transform.position, target) > stoppingDistance)
+                        {
+                            Vector3 direction = (target - transform.position).normalized;
+                            transform.Translate(direction * movingSpeed * Time.deltaTime, Space.World);
 
-        yield return TransitionToIdle();
-        if (actionAtTarget != null) 
-        {
-            Debug.Log("Nam11 MoveToTarget transition to next state " + " actionAtTarget " + actionAtTarget);
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
-        }
-    }
+                            if (direction != Vector3.zero)
+                            {
+                                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+                            }
+                            //Debug.Log("Nam11 Move to target loop. Distance to target " + Vector3.Distance(transform.position, target));
+                            yield return null;
+                        }
+                        success = true;
+                        Debug.Log("Nam11 MoveToTarget end loop " + target + " actionAtTarget " + actionAtTarget + "dogFollowPlayer.isFollowing = " + dogFollowPlayer.isFollowing);
+                    }
+                    finally
+                    {
+                        if (!success)
+                        {
+                            Debug.LogError("Nam11 MoveToTarget Exception: exited unexpectedly!");
+                        }
+                    }
+
+                    yield return StartCoroutine(TransitionToIdle());
+                    if (actionAtTarget != null)
+                    {
+                        Debug.Log("Nam11 MoveToTarget transition to next state " + " actionAtTarget " + actionAtTarget);
+                        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
+                    }
+                } */
 
     private IEnumerator TransitionToIdle()
     {
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         Debug.Log("Nam11 TransitionToIdle() start.");
-        if (stateInfo.IsName("Idle")) 
+        IEnumerator enumerator;
+
+        if (stateInfo.IsName("Idle"))
         {
             Debug.Log("Nam11 Current animation: " + stateInfo.shortNameHash);
             Debug.Log("Nam11 Dog is already in Idle State. No need to transition.");
-        } 
-        else if (stateInfo.IsName("Running")) 
+        }
+        else if (stateInfo.IsName("Running"))
         {
             Debug.Log("Nam11 Dog transition from running to idle");
-            yield return StartCoroutine(WaitAndMoveToIdle("RunningToIdle"));
-            // animator.SetTrigger("RunningToIdle");
+            enumerator = WaitAndMoveToIdle("RunningToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
         }
-<<<<<<< Updated upstream
-=======
-        else if (stateInfo.IsName("WalkingFast")) 
+        else if (stateInfo.IsName("WalkingFast"))
         {
             Debug.Log("Nam11 Dog transition from walking to idle");
             Debug.Log("Nam11 Current animation: " + stateInfo.shortNameHash);
-            yield return StartCoroutine(WaitAndMoveToIdle("WalkingFastToIdle"));
-
-            //WaitAndMoveToIdle("WalkingNormalToIdle");
-            // animator.SetTrigger("WalkingNormalToIdle");
+            enumerator = WaitAndMoveToIdle("WalkingFastToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
         }
->>>>>>> Stashed changes
-        else if (stateInfo.IsName("WalkingNormal")) 
+        else if (stateInfo.IsName("WalkingNormal"))
         {
             Debug.Log("Nam11 Dog transition from walking to idle");
             Debug.Log("Nam11 Current animation: " + stateInfo.shortNameHash);
-            yield return StartCoroutine(WaitAndMoveToIdle("WalkingNormalToIdle"));
-
-            //WaitAndMoveToIdle("WalkingNormalToIdle");
-            // animator.SetTrigger("WalkingNormalToIdle");
+            enumerator = WaitAndMoveToIdle("WalkingNormalToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
         }
-        else if (stateInfo.IsName("SittingCycle")) 
+        else if (stateInfo.IsName("SittingCycle"))
         {
-            Debug.Log("Nam11 Dog transition from SittingCycle to idle");            
+            Debug.Log("Nam11 Dog transition from SittingCycle to idle");
             Debug.Log("Nam11 Current animation: " + stateInfo.shortNameHash);
-            yield return StartCoroutine(WaitAndMoveToIdle("SittingCycleToIdle"));
-            // animator.SetTrigger("SittingCycleToIdle");
-        } 
-        else if (stateInfo.IsName("Breathing")) 
+            enumerator = WaitAndMoveToIdle("SittingCycleToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+        }
+        else if (stateInfo.IsName("Breathing"))
         {
             Debug.Log("Nam11 Dog is in Breathing cycle to idle.");
-            yield return StartCoroutine(WaitAndMoveToIdle("BreathingToIdle"));
-            // animator.SetTrigger("BreathingToIdle");
+            enumerator = WaitAndMoveToIdle("BreathingToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
         }
-        else if (stateInfo.IsName("AngryCycle")) 
+        else if (stateInfo.IsName("AngryCycle"))
         {
             Debug.Log("Nam11 Dog is in AngryCycle to idle.");
-            yield return StartCoroutine(WaitAndMoveToIdle("AngryCycleToIdle"));
-            // animator.SetTrigger("AngryCycleToIdle");
+            enumerator = WaitAndMoveToIdle("AngryCycleToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
         }
-        else if (stateInfo.IsName("WigglingTail")) 
+        else if (stateInfo.IsName("WigglingTail"))
         {
             Debug.Log("Nam11 Dog transition from WigglingTail to idle");
             Debug.Log("Nam11 Current animation: " + stateInfo.shortNameHash);
-            yield return StartCoroutine(WaitAndMoveToIdle("WigglingTailToIdle"));
-            // animator.SetTrigger("WigglingTailToIdle");
-        } 
-        else if (stateInfo.IsName("EatingCycle") || stateInfo.IsName("EatingStart")) 
+            enumerator = WaitAndMoveToIdle("WigglingTailToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+        }
+        else if (stateInfo.IsName("EatingCycle") || stateInfo.IsName("EatingStart"))
         {
             Debug.Log("Nam11 Dog is in EatingCycle or EatingStart to idle.");
-            yield return StartCoroutine(WaitAndMoveToIdle("EatingCycleToIdle"));
-            // animator.SetTrigger("EatingCycleToIdle");
-        } 
-        else if (stateInfo.IsName("SittingStart")) 
+            enumerator = WaitAndMoveToIdle("EatingCycleToIdle");
+            nestedTransitionToIdleCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+        }
+        else if (stateInfo.IsName("SittingStart"))
         {
             Debug.Log("Nam11 Dog is in SittingStart state.");
         }
-        else if (stateInfo.IsName("AngryStart")) 
+        else if (stateInfo.IsName("AngryStart"))
         {
             Debug.Log("Nam11 Dog is in AngryStart state.");
-        }  
-        else if (stateInfo.IsName("EatingStart")) 
+        }
+        else if (stateInfo.IsName("EatingStart"))
         {
             Debug.Log("Nam11 Dog is in EatingStart state.");
-        }        
-        else 
-        {           
+        }
+        else
+        {
             Debug.Log("Nam11 Unknown state. No transition to idle");
         }
     }
 
-    private IEnumerator WaitAndMoveToIdle(string triggerString) 
+    private IEnumerator WaitAndMoveToIdle(string triggerString)
     {
         int counter = 0;
         bool transitioned = false;
         //animator.ResetTrigger(triggerString);
         animator.SetTrigger(triggerString);
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        while (counter < WAIT_CYCLE) 
+        while (counter < WAIT_CYCLE)
         {
-            if (!stateInfo.IsName("Idle")) 
+            if (!stateInfo.IsName("Idle"))
             {
-
-                yield return new WaitForSeconds(WAITING_IN_MS);
+                yield return StartCoroutine(WaitForSecond(WAITING_IN_MS));
             }
-            
-            stateInfo = animator.GetCurrentAnimatorStateInfo(0); 
+
+            stateInfo = animator.GetCurrentAnimatorStateInfo(0);
             if (stateInfo.IsName("Idle")) // Any state other than Idle is okay
             {
                 transitioned = true;
                 break;
             }
-            counter++;   
+            counter++;
         }
-        if (transitioned) 
+        if (transitioned)
         {
             Debug.Log("Nam11 Successfully transition to Idle counter = " + counter);
         }
-        else 
+        else
         {
             Debug.Log("Nam11 Fail transition to Idle. Current State " + stateInfo.shortNameHash + " counter = " + counter);
         }
-        
     }
 
-    private IEnumerator TriggerAndWaitForTransitionToTarget(string triggerString) 
+    private IEnumerator TriggerAndWaitForTransitionToTarget(string triggerString)
     {
         int counter = 0;
         bool transitioned = false;
+
+        IEnumerator enumerator;
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         Debug.Log("Nam11 Start TriggerAndWaitForTransitionToTarget() start current state " + stateInfo.shortNameHash + " " + triggerString);
         //animator.ResetTrigger(triggerString); // Prevent accidental double triggering
+
         animator.SetTrigger(triggerString);
-        while (counter < WAIT_CYCLE) 
+
+        while (counter < WAIT_CYCLE)
         {
             stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
@@ -525,174 +502,161 @@ public class DogMovement : MonoBehaviour
                 transitioned = true;
                 break;
             }
-            yield return new WaitForSeconds(WAITING_IN_MS);
-            counter++;     
+            yield return StartCoroutine(WaitForSecond(WAITING_IN_MS));
+            counter++;
         }
 
-        if (!transitioned) 
+        if (!transitioned)
         {
             Debug.Log("Nam11 TriggerAndWaitForTransitionToTarget() End Fail to transition out of Idle state counter = " + counter);
         }
-        else 
+        else
         {
             Debug.Log("Nam11 TriggerAndWaitForTransitionToTarget() End Successfully transition to " + stateInfo.shortNameHash + " counter = " + counter);
         }
     }
 
-    private void MoveInDirection(Vector3 direction, float currentSpeed)
-    {
-        Debug.Log("Nam11 MoveInDirection() called with direction: " + direction);
-        moveCoroutine = StartCoroutine(MoveOverTime(direction, MOVING_TIME, currentSpeed));
-    }
+    /*     private IEnumerator MoveInDirection(Vector3 direction, float currentSpeed)
+        {
+            Debug.Log("Nam11 MoveInDirection() called with direction: " + direction);
+            yield return StartCoroutine(MoveOverTime(direction, MOVING_TIME, currentSpeed));
+        } */
 
-    private IEnumerator MoveOverTime(Vector3 direction, float duration, float currentSpeed)
+    private IEnumerator MoveOverTime(Vector3 direction, float duration = MOVING_TIME, float currentSpeed = WALKING_SPEED)
     {
-        float timeElapsed = 0f;
         Debug.Log("Nam11 MoveOverTime() start direction = " + direction);
-        while (timeElapsed < duration)
-        {
-            transform.Translate(direction * currentSpeed * Time.deltaTime, Space.World);
-            if (direction != Vector3.zero)
-            {
-                Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
-            }
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-        Debug.Log("Nam11 MoveOverTime() end");           
-        yield return StartCoroutine(TransitionToIdle());
+        IEnumerator enumerator;
+
+        enumerator = RotateTowardDirection(direction);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        float distance = 10.0f;
+        Vector3 targetPosition = transform.position + direction * distance;
+        targetPosition.y = 0;
+
+        enumerator = MakeDogNavigateToTarget(targetPosition);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Debug.Log($"Nam11 MoveOverTime() end targetPosition = {targetPosition}");
     }
 
-    private IEnumerator MakeDogStopTransitionToIdlePrivate() {
-        if (moveCoroutine != null) 
-        {
-            StopMovement();
-        }
+    private IEnumerator MakeDogStopTransitionToIdlePrivate()
+    {
+        StopMovement();
         dogFollowPlayer.isFollowing = false;
         yield return StartCoroutine(TransitionToIdle());
     }
 
-    private IEnumerator MakeDogSitPrivate() 
+    private IEnumerator MakeDogSitPrivate()
     {
         Debug.Log("Nam11 MakeDogSitPrivate() start animator = " + animator);
-        
-        if (moveCoroutine != null) // if dog is moving
-        {
-            StopMovement(); // stop the moving routine
-        }
+        IEnumerator enumerator;
+        StopMovement(); // stop the moving routine
+
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-=======
         isBusy = true;
->>>>>>> Stashed changes
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (!stateInfo.IsName("SittingCycle")) // check if the dog is not sitting
         {
-            yield return StartCoroutine(TransitionToIdle()); // transition to idle  
-            // move the dog to sitting state       
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("SittingStart")); 
+            enumerator = TransitionToIdle();
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TriggerAndWaitForTransitionToTarget("SittingStart");
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
             Debug.Log("Nam11 Dog is sucessfully transtion to sitting.");
         }
         else // dog is alaready sitting. leave it alone
         {
             Debug.Log("Nam11 Dog is already in sitting state.");
-        }  
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogSitPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
+        }
         Debug.Log($"Nam11 MakeDogSitPrivate() end isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogWalkPrivate() 
+    private IEnumerator MakeDogWalkForwardPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogWalkPrivate() start");
-
-        dogFollowPlayer.isFollowing = false;
-
-=======
         Debug.Log($"Nam11 MakeDogWalkPrivate() start isBusy = {isBusy}");
-
+        IEnumerator enumerator;
         dogFollowPlayer.isFollowing = false;
         isBusy = true;
->>>>>>> Stashed changes
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         string actionAtTarget = "WalkingNormal";
-        if (!stateInfo.IsName("WalkingNormal")) 
+        if (!stateInfo.IsName("WalkingNormal"))
         {
-            if (moveCoroutine != null) 
-            {
-                StopMovement();
-            }
-            yield return StartCoroutine(TransitionToIdle());
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
+            StopMovement();
+            enumerator = TransitionToIdle();
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+            enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
             Debug.Log("Nam11 Dog is sucessfully transtion to WalkingNormal.");
         }
-        else 
+        else
         {
             Debug.Log("Nam11 Dog is walking.");
         }
-        
-        MoveInDirection(Vector3.forward, WALKING_SPEED); 
-        yield return new WaitForSeconds(2f);
-
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogWalkPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
+        Vector3 forwardOfPlayer = player.forward;
+        enumerator = MoveOverTime(forwardOfPlayer);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+        yield return StartCoroutine(WaitForSecond(1f));
+        isBusy = false;
         Debug.Log($"Nam11 MakeDogWalkPrivate() end isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogWagTailPrivate() 
+    private IEnumerator MakeDogWagTailPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogWagTailPrivate() start");       
-=======
-        Debug.Log($"Nam11 MakeDogWagTailPrivate() start isBusy = {isBusy}");       
->>>>>>> Stashed changes
+        Debug.Log($"Nam11 MakeDogWagTailPrivate() start isBusy = {isBusy}");
+        IEnumerator enumerator;
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         string actionAtTarget = "WigglingTail";
-        if (moveCoroutine != null) 
+        StopMovement();
+
+        if (!stateInfo.IsName("WigglingTail"))
         {
-            StopMovement();
+            enumerator = TransitionToIdle();
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
         }
-        if (!stateInfo.IsName("WigglingTail")) 
-        {
-            yield return StartCoroutine(TransitionToIdle());
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
-        }
-        else 
+        else
         {
             Debug.Log("Nam11 Dog is wagging tail.");
-        }        
-<<<<<<< Updated upstream
-
-        Debug.Log("Nam11 MakeDogWagTailPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
+        }
         isBusy = true;
         Debug.Log($"Nam11 MakeDogWagTailPrivate() end isFollowing = dogFollowPlayer.isFollowing isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogAngryPrivate() 
+    private IEnumerator MakeDogAngryPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogAngryPrivate() start");
-=======
         Debug.Log($"Nam11 MakeDogAngryPrivate() start isBusy = {isBusy}");
->>>>>>> Stashed changes
+        IEnumerator enumerator;
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         string actionAtTarget = "AngryStart";
-        if (moveCoroutine != null) 
+        StopMovement();
+
+        if (!stateInfo.IsName("AngryCycle"))
         {
-            StopMovement();
-        }
-        if (!stateInfo.IsName("AngryCycle")) 
-        {
-            yield return StartCoroutine(TransitionToIdle());
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
+            enumerator = TransitionToIdle();
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+            nesteddogActionCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
             if (angryDogSound != null && angryDogSound.clip != null)
             {
                 Debug.Log("Nam11: Playing angry sound.");
@@ -703,434 +667,415 @@ public class DogMovement : MonoBehaviour
                 Debug.LogWarning("Nam11: angryDogSound or its clip is missing.");
             }
         }
-        else 
+        else
         {
             Debug.Log("Nam11 Dog is already in angry state.");
-        }        
-<<<<<<< Updated upstream
-
-        Debug.Log("Nam11 MakeDogAngryPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
+        }
         isBusy = true;
         Debug.Log($"Nam11 MakeDogAngryPrivate() end isFollowing = dogFollowPlayer.isFollowing isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogComeHerePrivate(Vector3 target) 
+    private IEnumerator MakeDogComeHerePrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogComeHerePrivate() start");
-        string actionAtTarget = "WigglingTail";
-        if (moveCoroutine != null) 
-        {
-            StopMovement();
-        }
-        dogFollowPlayer.isFollowing = false;
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("Running"));
-        //moveCoroutine = StartCoroutine(MoveToTarget(target, actionAtTarget, RUNNING_SPEED));
-        navMeshAgent.enabled = true;
-        //navMeshAgent.stoppingDistance = 0.05f;
-        navMeshAgent.SetDestination(target);
-        while (!navMeshAgent.pathPending && navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
-        {
-            yield return null;
-        }
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));           
-        Debug.Log("Nam11 MakeDogComeHerePrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
         Debug.Log($"Nam11 MakeDogComeHerePrivate() start isBusy = {isBusy}");
+        IEnumerator enumerator;
         string actionAtTarget = "WigglingTail";
         isBusy = true;
-        dogFollowPlayer.isFollowing = false;
-        if (moveCoroutine != null || navMeshAgent.enabled) 
-        {
-            StopMovement();
-        }
-
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingFast"));
-        //moveCoroutine = StartCoroutine(MoveToTarget(target, actionAtTarget, RUNNING_SPEED));
-        navMeshAgent.enabled = true;
-        navMeshAgent.stoppingDistance = 1f;
-        navMeshAgent.speed = WALKING_SPEED;
-        navMeshAgent.SetDestination(target);
-        Debug.Log($"Nam11 navMeshAgent.pathPending = {navMeshAgent.pathPending} navMeshAgent.remainingDistance = {navMeshAgent.remainingDistance}");
-        while (navMeshAgent.pathPending)
-        {
-            yield return null;
-        }
-        while (navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance) 
-        {
-            Debug.Log($"Nam11 navMeshAgent.pathPending = {navMeshAgent.pathPending} navMeshAgent.remainingDistance = {navMeshAgent.remainingDistance} navMeshAgent.velocity.sqrMagnitude = {navMeshAgent.velocity.sqrMagnitude} navMeshAgent.hasPath = {navMeshAgent.hasPath}");
-            yield return null;
-        }
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));    
-             
         dogFollowPlayer.isFollowing = false;
         StopMovement();
-        isBusy = false;  
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget("WalkingFast");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+
+        Vector3 playerPosition = player.position + player.forward * 0.6f;
+        Vector3 direction = (player.position - transform.position).normalized;
+        playerPosition.y = 0f;
+
+        enumerator = RotateTowardDirection(direction);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = MakeDogNavigateToTarget(playerPosition);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        direction = (player.position - transform.position).normalized;
+
+        enumerator = RotateTowardDirection(direction);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         Debug.Log($"Nam11 MakeDogComeHerePrivate() end isFollowing = dogFollowPlayer.isFollowing isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogMoveLeftPrivate() 
+    private IEnumerator MakeDogMoveLeftPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogMoveLeftPrivate() start");
+        Debug.Log($"Nam11 MakeDogMoveLeftPrivate() start dogActionCoroutine = {dogActionCoroutine}");
+        IEnumerator enumerator;
         string actionAtTarget = "WalkingNormal";
-        if (moveCoroutine != null) 
-=======
-        Debug.Log($"Nam11 MakeDogMoveLeftPrivate() start moveCoroutine = {moveCoroutine}");
-        string actionAtTarget = "WalkingNormal";
-        if (moveCoroutine != null || navMeshAgent.enabled) 
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        StopMovement();
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-=======
         isBusy = true;
->>>>>>> Stashed changes
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
-        MoveInDirection(Vector3.left, WALKING_SPEED); // Global left
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogMoveLeftPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
+        enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 leftOfPlayer = -player.right;
+        enumerator = MoveOverTime(leftOfPlayer);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        isBusy = false;
         Debug.Log($"Nam11 MakeDogMoveLeftPrivate() end isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogMoveRightPrivate() 
+    private IEnumerator MakeDogMoveRightPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogMoveRightPrivate() start");
-        string actionAtTarget = "WalkingNormal";
-        if (moveCoroutine != null) 
-=======
         Debug.Log($"Nam11 MakeDogMoveRightPrivate() start");
+        IEnumerator enumerator;
         string actionAtTarget = "WalkingNormal";
-        if (moveCoroutine != null || navMeshAgent.enabled) 
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        StopMovement();
         dogFollowPlayer.isFollowing = false;
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
-        MoveInDirection(Vector3.right, WALKING_SPEED); // Global left
-<<<<<<< Updated upstream
-
-        Debug.Log("Nam11 MakeDogMoveRightPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
         isBusy = true;
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 rightOfPlayer = player.right;
+        enumerator = MoveOverTime(rightOfPlayer);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        isBusy = false;
         Debug.Log($"Nam11 MakeDogMoveRightPrivate() end isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogMoveBackwardPrivate() 
+    private IEnumerator MakeDogMoveBackwardPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogMoveBackwardPrivate() start");
-        string actionAtTarget = "WalkingNormal";
-        if (moveCoroutine != null) 
-=======
         Debug.Log($"Nam11 MakeDogMoveBackwardPrivate() start");
+        IEnumerator enumerator;
         string actionAtTarget = "WalkingNormal";
-        if (moveCoroutine != null || navMeshAgent.enabled) 
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        StopMovement();
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-=======
         isBusy = true;
->>>>>>> Stashed changes
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(actionAtTarget));
-        MoveInDirection(Vector3.back, WALKING_SPEED); // Global left
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogMoveBackwardPrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
+        enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 backOfPlayer = -player.forward;
+        enumerator = MoveOverTime(backOfPlayer);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+        isBusy = false;
         Debug.Log($"Nam11 MakeDogMoveBackwardPrivate() end isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogGoTherePrivate(Transform destination) 
+    private IEnumerator MakeDogGoTherePrivate(Vector3 destination)
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogGoTherePrivate() start");
-        string actionAtTarget = "WigglingTail";
-        if (moveCoroutine != null) 
-=======
         Debug.Log($"Nam11 MakeDogGoTherePrivate() start");
-        string actionAtTarget = "WigglingTail";
-        if (moveCoroutine != null || navMeshAgent.enabled) 
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        IEnumerator enumerator;
+        string actionAtTarget = "WalkingNormal";
+        StopMovement();
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingNormal"));
-        moveCoroutine = StartCoroutine(MoveToTarget(destination.position, actionAtTarget, RUNNING_SPEED));
-
-        Debug.Log("Nam11 MakeDogGoTherePrivate() end isFollowing " + dogFollowPlayer.isFollowing);
-=======
         isBusy = true;
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingNormal"));
-        moveCoroutine = StartCoroutine(MoveToTarget(destination.position, actionAtTarget, WALKING_SPEED));
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = MakeDogNavigateToTarget(destination);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         isBusy = false;
         Debug.Log($"Nam11 MakeDogGoTherePrivate() end isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogGoEatPrivate(Transform destination) 
+    private IEnumerator MakeDogGoEatPrivate(Transform destination)
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogGoEatPrivate() start");
-=======
-        Debug.Log($"Nam11 MakeDogGoEatPrivate() start");
->>>>>>> Stashed changes
+        Debug.Log($"Nam11 MakeDogGoEatPrivate() start destination.position = {destination.position}");
+        IEnumerator enumerator;
         string actionAtTarget = "EatingStart";
         if (TryGetComponent<NavMeshAgent>(out var agent))
         {
             agent.enabled = false;
         }
 
-<<<<<<< Updated upstream
-        if (moveCoroutine != null) 
-=======
-        if (moveCoroutine != null || navMeshAgent.enabled) 
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        StopMovement();
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingNormal"));
-        moveCoroutine = StartCoroutine(MoveToTarget(destination.position, actionAtTarget, JOGGING_SPEED));
-        if (agent != null) agent.enabled = true;
-
-        Debug.Log("Nam11 MakeDogGoEatPrivate() end. isFollowing " + dogFollowPlayer.isFollowing);
-=======
         isBusy = true;
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingNormal"));
-        moveCoroutine = StartCoroutine(MoveToTarget(destination.position, actionAtTarget, WALKING_SPEED));
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget("WalkingNormal");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 foodPos = destination.position;
+        foodPos.y = 0;
+        Vector3 directionToFood = (foodPos - player.position).normalized;
+        float stopOffset = 0.5f; // in meters
+        Vector3 stopPosition = foodPos - directionToFood * stopOffset;
+
+        enumerator = MakeDogNavigateToTarget(stopPosition);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 lookDir = (destination.position - player.transform.position).normalized;
+        lookDir.y = 0;
+        enumerator = RotateTowardDirection(lookDir);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget(actionAtTarget);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         if (agent != null) agent.enabled = true;
 
-        Debug.Log($"Nam11 MakeDogGoEatPrivate() end. isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
->>>>>>> Stashed changes
+        Debug.Log($"Nam11 MakeDogGoEatPrivate() end. isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy} destination.position = {destination.position}");
     }
 
-    private IEnumerator MakeDogFetchBallPrivate(Transform ball, Transform player) 
+    private IEnumerator MakeDogFetchBallPrivate(Transform ball, System.Action onComplete = null)
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogFetchBallPrivate() start");
-        if (moveCoroutine != null)
-=======
+        IEnumerator enumerator;
         Debug.Log($"Nam11 MakeDogFetchBallPrivate() start  dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing}");
-        if (moveCoroutine != null || navMeshAgent.enabled)
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
-        
+        StopMovement();
+
         if (ball == null)
         {
             Debug.LogError("Nam11 ERROR1: Ball is null in MakeDogFetchBallPrivate!");
             yield break;
         }
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-=======
         isBusy = true;
->>>>>>> Stashed changes
         // Step 1: Transition to idle
-        yield return StartCoroutine(TransitionToIdle());
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
         // Step 2: Run to the ball          
-<<<<<<< Updated upstream
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("Running"));
-=======
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingFast"));
->>>>>>> Stashed changes
-        yield return StartCoroutine(MoveToTarget(ball.position, null, RUNNING_SPEED));
+        enumerator = TriggerAndWaitForTransitionToTarget("WalkingFast");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        //yield return StartCoroutine(MoveToTarget(ball.position, null, RUNNING_SPEED));
+        Vector3 ballPos = ball.position;
+        Vector3 directionToBall = (ballPos - player.position).normalized;
+        float stopOffset = 0.5f; // in meters
+
+        Vector3 stopPosition = ballPos - directionToBall * stopOffset;
+        enumerator = MakeDogNavigateToTarget(stopPosition, RUNNING_SPEED, 0.0f);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 lookDir = (ballPos - transform.position).normalized;
+        lookDir.y = 0;
+        enumerator = RotateTowardDirection(lookDir);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
         // Step 3: Pretend to fetch
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("EatingStart"));
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Debug.Log("Nam11 MakeDogFetchBallPrivate finish idle");
+
+        enumerator = TriggerAndWaitForTransitionToTarget("EatingStart");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Debug.Log("Nam11 MakeDogFetchBallPrivate Wait for 1 second start");
         //yield return new WaitForSeconds(1.0f); // Simulate grabbing delay
+        Debug.Log("Nam11 MakeDogFetchBallPrivate Wait for 1 second end");
         if (ball == null)
         {
             Debug.LogError("Nam11 ERROR2: Ball is null in MakeDogFetchBallPrivate!");
             yield break;
         }
+
         // Step 4: Attach the ball to the dog's mouth
         ball.SetParent(ballHoldPoint);
         ball.localPosition = Vector3.zero;
         ball.localRotation = Quaternion.identity;
 
         // Step 5: Return to player
-        yield return StartCoroutine(TransitionToIdle());
-<<<<<<< Updated upstream
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("Running"));
-=======
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingFast"));
->>>>>>> Stashed changes
-        Vector3 playerPosition = player.position;
-        playerPosition.y = 0f;
-        yield return StartCoroutine(MoveToTarget(playerPosition, null, RUNNING_SPEED));
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
-        yield return StartCoroutine(TransitionToIdle());
+        enumerator = TriggerAndWaitForTransitionToTarget("WalkingFast");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        Vector3 playerPosition = player.position + player.forward * 0.6f;
+        //playerPosition.y = navMeshAgent.transform.position.y; // keep same height as dog
+
+
+        playerPosition.y = 0f;
+        //yield return StartCoroutine(MoveToTarget(playerPosition, null, RUNNING_SPEED));
+        enumerator = MakeDogNavigateToTarget(playerPosition, RUNNING_SPEED, BALL_DROPPING_TO_PLAYER_DISTANCE, BALL_FETCHING_TIMEOUT);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        //lookDirection.y = 0; // flatten the direction
+        // make the dog rotate to face player
+        lookDir = player.position - navMeshAgent.transform.position;
+        lookDir.y = 0;
+
+        enumerator = RotateTowardDirection(lookDir);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
         // Step 6: Drop the ball in front of the player
         ball.SetParent(null);
-        Vector3 dropPosition = transform.position + transform.forward * 0.5f;
+        Vector3 dropPosition = navMeshAgent.transform.position + navMeshAgent.transform.forward * 0.3f;
+        //Vector3 dropPosition = playerPosition;
         dropPosition.y = 0f;
         ball.position = dropPosition;
-        //dogFollowPlayer.isFollowing = true;
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogFetchBallPrivate() end ball position " + ball.position);
-=======
+
         isBusy = false;
-        Debug.Log($"Nam11 MakeDogFetchBallPrivate() end ball position = {ball.position} isBusy = {isBusy}");
->>>>>>> Stashed changes
+        onComplete?.Invoke();
+
+        Debug.Log($"Nam11 MakeDogFetchBallPrivate() end ball position = {ball.position} isBusy = {isBusy} navMeshAgent.transform.position = {navMeshAgent.transform.position}");
+        //MakeDogWander();
     }
 
-    private IEnumerator MakeDogFollowPlayerPrivate() 
+    private IEnumerator MakeDogFollowPlayerPrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogFollowPlayerPrivate() start");
-        if (moveCoroutine != null)
-=======
         Debug.Log($"Nam11 MakeDogFollowPlayerPrivate() start");
-        if (moveCoroutine != null || navMeshAgent.enabled)
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        IEnumerator enumerator;
+        StopMovement();
+        isBusy = false;
         // Step 1: Transition to idle
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WalkingNormal"));
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget("WalkingNormal");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         dogFollowPlayer.isFollowing = true;
-<<<<<<< Updated upstream
-        
-=======
         Debug.Log($"Nam11 MakeDogFollowPlayerPrivate() end dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing}");
     }
 
-    private IEnumerator MakeDogWanderPrivate() 
+    private IEnumerator MakeDogWanderPrivate()
     {
         Debug.Log("Nam11 MakeDogWanderPrivate() start");
-        if (moveCoroutine != null || navMeshAgent.enabled)
-        {
-            StopMovement();
-        }
+        StopMovement();
         isBusy = false;
         isPlayingMath = false;
         dogAnswers.Clear();
         lastMathQuestion = "";
-        yield return StartCoroutine(TransitionToIdle());
-        StartRandomRoaming();
+
+        IEnumerator enumerator = RandomRoamingLoop();
+        randomRoamCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
         Debug.Log($"Nam11 MakeDogWanderPrivate() end isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
     public void ThrowBallAndFetch(Transform ball, Transform player)
     {
-        StartCoroutine(ThrowBallAndFetchPrivate(ball, player));
+        dogActionCoroutine = StartCoroutine(ThrowBallAndFetchPrivate(ball, player));
     }
 
     private IEnumerator ThrowBallAndFetchPrivate(Transform ball, Transform player)
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 ThrowBallAndFetchPrivate() start");
-        dogFollowPlayer.isFollowing = false;
-        if (moveCoroutine != null) 
-        {
-            StopMovement();
-        }
-=======
         Debug.Log($"Nam11 ThrowBallAndFetchPrivate() start");
+        IEnumerator enumerator;
         dogFollowPlayer.isFollowing = false;
-        if (moveCoroutine != null || navMeshAgent.enabled) 
-        {
-            StopMovement();
-        }
+        StopMovement();
         isBusy = true;
->>>>>>> Stashed changes
-        
-        yield return StartCoroutine(TransitionToIdle());
+
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
         // 1. Simulate ball throw: pick a random spot in front of player
-<<<<<<< Updated upstream
-        Vector3 throwDirection = player.forward + player.right * Random.Range(-0.5f, 0.5f);
-        Vector3 throwTarget = player.position + throwDirection.normalized * Random.Range(3f, 6f);
-=======
         Vector3 throwDirection = player.forward + player.right * UnityEngine.Random.Range(-0.5f, 0.5f);
         Vector3 throwTarget = player.position + throwDirection.normalized * UnityEngine.Random.Range(3f, 6f);
->>>>>>> Stashed changes
         throwTarget.y = 0f;
 
         Debug.Log("Nam11 ThrowBall target = " + throwTarget);
         ball.SetParent(null);
         ball.position = throwTarget;
+        yield return StartCoroutine(WaitForSecond(WAITING_IN_MS));
 
-        yield return new WaitForSeconds(0.5f); // small pause to simulate throw time
-
-        // 2. Command dog to fetch again
-        yield return StartCoroutine(MakeDogFetchBallPrivate(ball, player));
-        moveCoroutine = null;
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 ThrowBallAndFetchPrivate() end");
-    }
-    private bool ShouldStartFollowingAfterAction(string action)
-    {
-        return action != "EatingStart";
-=======
+        dogActionCoroutine = null;
         isBusy = false;
         Debug.Log($"Nam11 ThrowBallAndFetchPrivate() end isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
-    private IEnumerator MakeDogComfortMePrivate(Vector3 target)
+    private IEnumerator MakeDogComfortMePrivate()
     {
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogComfortMePrivate() start");
-        
-        if (moveCoroutine != null)
-=======
         Debug.Log($"Nam11 MakeDogComfortMePrivate() start isBusy = {isBusy}");
-        
-        if (moveCoroutine != null || navMeshAgent.enabled)
->>>>>>> Stashed changes
-        {
-            StopMovement();
-        }
+        IEnumerator enumerator;
+        StopMovement();
 
         dogFollowPlayer.isFollowing = false;
-<<<<<<< Updated upstream
-
-=======
         isBusy = true;
->>>>>>> Stashed changes
-        yield return StartCoroutine(TransitionToIdle());
+        enumerator = TransitionToIdle();
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
 
         // Walk or run to the player
-        string approachAnimation = "WalkingNormal";
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(approachAnimation));
-        moveCoroutine = StartCoroutine(MoveToTarget(target, "WigglingTail", WALKING_SPEED)); // or use RUNNING_SPEED if you want it faster
+        enumerator = TriggerAndWaitForTransitionToTarget("WalkingNormal");
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        //yield return StartCoroutine(MoveToTarget(target, "WigglingTail", WALKING_SPEED)); // or use RUNNING_SPEED if you want it faster
+        Vector3 playerPosition = player.position;
+        Vector3 direction = (playerPosition - transform.position).normalized;
+        playerPosition.y = 0f;
+
+        enumerator = MakeDogNavigateToTarget(playerPosition);
+        nesteddogActionCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         if (comfortDogSound != null && comfortDogSound.clip != null)
         {
             Debug.Log("Nam11: Playing comfort sound.");
@@ -1140,31 +1085,22 @@ public class DogMovement : MonoBehaviour
         {
             Debug.LogWarning("Nam11: comfortDogSound or its clip is missing.");
         }
-        yield return new WaitForSeconds(audioSource.clip.length);
-        moveCoroutine = null;
-<<<<<<< Updated upstream
-        Debug.Log("Nam11 MakeDogComfortMePrivate() end");
-=======
+        yield return StartCoroutine(WaitForSecond(audioSource.clip.length));
+
         isBusy = false;
         Debug.Log($"Nam11 MakeDogComfortMePrivate() end isBusy = {isBusy}");
->>>>>>> Stashed changes
     }
 
     //TODO
     // private IEnumerable MakeDogHappyPrivate(Vector3 target) 
     // {
-        
-    // }
-<<<<<<< Updated upstream
-=======
 
-    public void StartRandomRoaming()
-    {
-        if (randomRoamCoroutine == null)
+    // }
+
+    /*     public IEnumerator StartRandomRoaming()
         {
-            randomRoamCoroutine = StartCoroutine(RandomRoamingLoop());
-        }
-    }
+            yield return StartCoroutine(RandomRoamingLoop());
+        } */
 
     public void StopRandomRoaming()
     {
@@ -1173,62 +1109,95 @@ public class DogMovement : MonoBehaviour
             StopCoroutine(randomRoamCoroutine);
             randomRoamCoroutine = null;
         }
+        if (nestedrandomRoamCoroutine != null)
+        {
+            StopCoroutine(nestedrandomRoamCoroutine);
+            nestedrandomRoamCoroutine = null;
+        }
+        if (nestedTransitionToIdleCoroutine != null)
+        {
+            StopCoroutine(nestedTransitionToIdleCoroutine);
+            nestedTransitionToIdleCoroutine = null;
+        }
+        if (navMeshAgent != null && navMeshAgent.enabled)
+        {
+            navMeshAgent.ResetPath();
+            navMeshAgent.velocity = Vector3.zero;
+        }
+        ResetTriggerAndReturnToIdle();
     }
 
     private IEnumerator RandomRoamingLoop()
     {
+        Debug.Log("Nam11: RandomRoamingLoop start");
         if (dogFollowPlayer)
         {
             Debug.Log($"Nam11: RandomRoamingLoop() start dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
         }
-        while (true && dogFollowPlayer != null)
+
+        var room = MRUK.Instance?.GetCurrentRoom();
+        if (!room)
         {
-            //Debug.Log($"Nam11: RandomRoamingLoop() start dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
+            Debug.Log("Nam11: RandomRoamingLoop Room is not available");
+            yield return null;
+        }
+        yield return StartCoroutine(WaitForNavMeshReady());
+        Debug.Log($"Nam11: RandomRoamingLoop Room wait end. dog position = {navMeshAgent.transform.position} dogFollowPlayer = {dogFollowPlayer}");
+        while (dogFollowPlayer != null)
+        {
+            //Debug.Log($"Nam11: RandomRoamingLoop() start dog position = {navMeshAgent.transform.position} isBusy = {isBusy}");
             if (dogFollowPlayer.isFollowing || isBusy)
             {
                 yield return null;
                 continue;
             }
 
-            Vector3 randomPosition = new Vector3(
-                UnityEngine.Random.Range(minBounds.x, maxBounds.x),
-                transform.position.y,
-                UnityEngine.Random.Range(minBounds.z, maxBounds.z)
-            );
+            /*             Vector3 randomPosition = new Vector3(
+                            UnityEngine.Random.Range(minBounds.x, maxBounds.x),
+                            transform.position.y,
+                            UnityEngine.Random.Range(minBounds.z, maxBounds.z)
+                        ); */
+            //navMeshAgent.ResetPath();
+            IEnumerator enumerator = TransitionToIdle();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
 
-            yield return StartCoroutine(TransitionToIdle());
-            navMeshAgent.enabled = true;
-            navMeshAgent.stoppingDistance = 0.1f;
-            navMeshAgent.speed = WANDERING_SPEED;
-            navMeshAgent.SetDestination(randomPosition);
-            animator.SetTrigger("WalkingNormal");
-            //float distanceToTarget = Vector3.Distance(transform.position, randomPosition);
-            //Debug.Log($"Nam11: navMeshAgent.remainingDistance = {navMeshAgent.remainingDistance} randomPosition = {randomPosition}");
-            while (navMeshAgent.remainingDistance > DISTANCE_TO_TARGET)
-            {
-                if (dogFollowPlayer.isFollowing || isBusy) yield break;
-                yield return null;
-                //distanceToTarget = Vector3.Distance(transform.position, randomPosition);
-                //Debug.Log($"Nam11: Moving to random target dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy} distanceToTarget = {navMeshAgent.remainingDistance}");
-            }
+            //navMeshAgent.stoppingDistance = DISTANCE_TO_TARGET - 0.1f;
 
-            yield return StartCoroutine(TransitionToIdle());
-            yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 5f));
-            //Debug.Log($"Nam11: RandomRoamingLoop() end dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
+            Vector3 randomPosition = GuardianWanderUtil.FindReachableDestinationInGuardianArc(player, navMeshAgent.transform);
+            enumerator = MakeDogNavigateToTarget(randomPosition, WANDERING_SPEED, DISTANCE_TO_TARGET);
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+            yield return StartCoroutine(WaitForSecond(UnityEngine.Random.Range(2f, 5f)));
+            //yield return StartCoroutine(TransitionToIdle());
+            Debug.Log($"Nam11: RandomRoamingLoop() end dog position = {navMeshAgent.transform.position} isBusy = {isBusy}");
         }
-        Debug.Log("Nam11: RandomRoamingLoop() end isBusy = {isBusy}");
+        Debug.Log($"Nam11: RandomRoamingLoop() function end isBusy = {isBusy} dog position = {navMeshAgent.transform.position}");
     }
 
     private IEnumerator MakeDogDoMathPrivate(string mathExpression)
     {
         Debug.Log($"Nam11 MakeDogDoMathPrivate() start mathExpression: {mathExpression} isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
-        if (isPlayingMath == true) 
+        if (isPlayingMath == true)
         {
             int answer = predefinedMathExpressions[mathExpression];
-            yield return StartCoroutine(TransitionToIdle());
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("AngryStart"));
-            yield return StartCoroutine(BarkNTimesCoroutine(answer));
-            yield return StartCoroutine(TransitionToIdle());
+
+            IEnumerator enumerator = TransitionToIdle();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TriggerAndWaitForTransitionToTarget("AngryStart");
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = BarkNTimesCoroutine(answer);
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TransitionToIdle();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
             dogAnswers.Insert(0, answer);
             lastMathQuestion = mathExpression;
         }
@@ -1238,48 +1207,80 @@ public class DogMovement : MonoBehaviour
     private IEnumerator BarkNTimesCoroutine(int count)
     {
         Debug.Log($"Nam11 BarkNTimesCoroutine() start count = {count}");
+
         for (int i = 0; i < count; i++)
         {
-            if (singleBarkSoundMath != null)
+            if (singleBarkSoundMath != null && singleBarkSoundMath.clip != null)
             {
-                singleBarkSoundMath.Play();
-                Debug.Log($"Nam11: Barking {i + 1}/{count}");
+                singleBarkSoundMath.PlayOneShot(singleBarkSoundMath.clip);
+                Debug.Log($"Nam11: Barking {i + 1}/{count} singleBarkSoundMath.clip.length = {singleBarkSoundMath.clip.length}");
+
+                float totalDelay = singleBarkSoundMath.clip.length + 0.7f;
+                float startTime = Time.realtimeSinceStartup;
+
+                while (Time.realtimeSinceStartup - startTime < totalDelay)
+                {
+                    yield return null; // wait until delay is met in real-world time
+                }
             }
-            yield return new WaitForSeconds(singleBarkSoundMath.clip.length + 0.1f); // slight delay between barks
+            else
+            {
+                Debug.LogWarning("Nam11: Bark audio source or clip is null.");
+                yield return new WaitForSeconds(1.5f);
+            }
         }
         Debug.Log("Nam11 BarkNTimesCoroutine() end");
-        //isBusy = false;
-        //StartRandomRoaming();
     }
 
-    private IEnumerator DogRespondToSetupMathGame() 
+
+
+    private IEnumerator DogRespondToSetupMathGame()
     {
         Debug.Log("Nam11 DogRespondToSetupMathGame() start");
-        string animation = "AngryStart";
-        yield return StartCoroutine(TransitionToIdle());
-        yield return StartCoroutine(TriggerAndWaitForTransitionToTarget(animation));
-        yield return StartCoroutine(BarkNTimesCoroutine(1));
-        yield return StartCoroutine(TransitionToIdle());
+
+        IEnumerator enumerator = TransitionToIdle();
+        nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TriggerAndWaitForTransitionToTarget("AngryStart");
+        nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = BarkNTimesCoroutine(1);
+        nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
+        enumerator = TransitionToIdle();
+        nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         Debug.Log("Nam11 DogRespondToSetupMathGame() end");
     }
 
-    private IEnumerator DogCorrectMathRespondPrivate() 
+    private IEnumerator DogCorrectMathRespondPrivate()
     {
         Debug.Log($"Nam11 DogCorrectMathRespondPrivate() start isPlayingMath = {isPlayingMath} dogAnswers.Count = {dogAnswers.Count} lastMathQuestion = {lastMathQuestion} isBusy = {isBusy}");
-        if (isPlayingMath == true) 
+        if (isPlayingMath == true)
         {
-            if (dogAnswers.Count != 0) 
+            if (dogAnswers.Count != 0)
             {
-                if (lastMathQuestion != "") 
-                {                  
+                if (lastMathQuestion != "")
+                {
                     Debug.Log($"Nam11 Update the dictonary with correct answer. lastMathQuestion = {lastMathQuestion} dogAnswers[LAST_DOG_ANSWER] = {dogAnswers[LAST_DOG_ANSWER]}");
                     predefinedMathExpressions[lastMathQuestion] = dogAnswers[LAST_DOG_ANSWER];
-                    yield return StartCoroutine(TransitionToIdle());
-                    yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("WigglingTail"));
+
+                    IEnumerator enumerator = TransitionToIdle();
+                    nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+                    yield return enumerator;
+
+                    enumerator = TriggerAndWaitForTransitionToTarget("WigglingTail");
+                    nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+                    yield return enumerator;
+
                     lastMathQuestion = "";
                     dogAnswers.Clear();
                 }
-                else 
+                else
                 {
                     Debug.Log("Nam11 Not suppose to be here.");
                 }
@@ -1288,12 +1289,14 @@ public class DogMovement : MonoBehaviour
         Debug.Log($"Nam11 DogCorrectMathRespondPrivate() end isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
     }
 
-    private IEnumerator DogIncorrectMathRespondPrivate() 
+    private IEnumerator DogIncorrectMathRespondPrivate()
     {
         Debug.Log($"Nam11 DogIncorrectMathRespondPrivate() start isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
-        if (isPlayingMath == true) 
+        if (isPlayingMath == true)
         {
-            yield return StartCoroutine(TransitionToIdle());
+            IEnumerator enumerator = TransitionToIdle();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
             if (incorrectMathSorrySound != null && incorrectMathSorrySound.clip != null)
             {
                 Debug.Log("Nam11: DogIncorrectMathRespondPrivate() playing sad sound.");
@@ -1307,29 +1310,42 @@ public class DogMovement : MonoBehaviour
         Debug.Log($"Nam11 DogIncorrectMathRespondPrivate() end isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
     }
 
-    private IEnumerator DogTryPreviousMathProblemAgainPrivate() 
+    private IEnumerator DogTryPreviousMathProblemAgainPrivate()
     {
         Debug.Log($"Nam11 DogIncorrectMathRespondPrivate() start isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
-        if (isPlayingMath == true) 
+        if (isPlayingMath == true)
         {
             int newAnswer = RandomGeneratorAnswer();
-            yield return StartCoroutine(TransitionToIdle());
-            yield return StartCoroutine(TriggerAndWaitForTransitionToTarget("AngryStart"));
-            yield return StartCoroutine(BarkNTimesCoroutine(newAnswer));
-            yield return StartCoroutine(TransitionToIdle());
+
+            IEnumerator enumerator = TransitionToIdle();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TriggerAndWaitForTransitionToTarget("AngryStart");
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = BarkNTimesCoroutine(newAnswer);
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            enumerator = TransitionToIdle();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
             dogAnswers.Insert(0, newAnswer);
         }
         Debug.Log($"Nam11 DogTryPreviousMathProblemAgainPrivate() end isBusy = {isBusy}");
     }
 
-    private int RandomGeneratorAnswer() 
+    private int RandomGeneratorAnswer()
     {
         int number = 1;
-        if (lastMathQuestion != "") 
+        if (lastMathQuestion != "")
         {
-            int answer = correctAnswer[lastMathQuestion]; 
+            int answer = correctAnswer[lastMathQuestion];
             number = UnityEngine.Random.Range(answer - 1, answer + 2);
-            while (dogAnswers.Contains(number)) 
+            while (number != answer && dogAnswers.Contains(number))
             {
                 number = UnityEngine.Random.Range(answer - 1, answer + 2);
             }
@@ -1338,42 +1354,206 @@ public class DogMovement : MonoBehaviour
         return number;
     }
 
-    private IEnumerator DogEndMathSectionPrivate() 
+    private IEnumerator DogEndMathSectionPrivate()
     {
         Debug.Log($"Nam11 DogEndMathSectionPrivate() start isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
         isBusy = false;
         isPlayingMath = false;
         dogAnswers.Clear();
         lastMathQuestion = "";
-        yield return StartCoroutine(TransitionToIdle());
+
+        IEnumerator enumerator = TransitionToIdle();
+        nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+        yield return enumerator;
+
         Debug.Log($"Nam11 DogEndMathSectionPrivate() end isPlayingMath = {isPlayingMath} isBusy = {isBusy}");
     }
 
-    private IEnumerator MathGameSetupPrivate(Vector3 playerPostion, string setupString) 
+    private IEnumerator MathGameSetupPrivate(string setupString)
     {
         Debug.Log($"Nam11: MathGameSetup() start. setupString = {setupString} isBusy = {isBusy} isPlayingMath = {isPlayingMath}");
-        if (setupString == "let play math game") 
+        IEnumerator enumerator;
+        if (setupString == "let play math game")
         {
-            yield return StartCoroutine(MakeDogComeHerePrivate(playerPostion));
-            isBusy = true;  
+            enumerator = MakeDogComeHerePrivate();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
+            isBusy = true;
         }
-        else if (setupString == "are you ready" && isBusy == true) 
-        {         
-            yield return StartCoroutine(DogRespondToSetupMathGame());
-            isPlayingMath = true;
-        }
-        else if (setupString == "let go" && isBusy == true) 
+        else if (setupString == "are you ready" && isBusy == true)
         {
-            yield return StartCoroutine(DogRespondToSetupMathGame());
+            enumerator = DogRespondToSetupMathGame();
+            nestedrandomRoamCoroutine = StartCoroutine(enumerator);
+            yield return enumerator;
+
             isPlayingMath = true;
             dogAnswers.Clear();
             lastMathQuestion = "";
         }
-        else 
+        else
         {
             Debug.Log("Nam11: MathGameSetup() Not suppose to be here.");
         }
         Debug.Log($"Nam11: MathGameSetup() end. isBusy = {isBusy} isPlayingMath = {isPlayingMath}");
     }
->>>>>>> Stashed changes
+
+    private bool SetWanderingLoation(NavMeshAgent dog)
+    {
+        float wanderRadius = 2.0f;  // Max distance from origin
+        float maxSampleDistance = 2.0f; // How far to search for NavMesh around candidate point
+        int maxAttempts = 10;
+
+        for (int attempts = 0; attempts < maxAttempts; attempts++)
+        {
+            Vector2 random2D = UnityEngine.Random.insideUnitCircle * wanderRadius;
+            Vector3 candidate = dog.transform.position + new Vector3(random2D.x, 0, random2D.y);
+
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, maxSampleDistance, NavMesh.AllAreas))
+            {
+                float dist = Vector3.Distance(dog.transform.position, hit.position);
+                if (dist >= 1.0f)
+                {
+                    NavMeshPath path = new NavMeshPath();
+                    if (dog.CalculatePath(hit.position, path) && path.status == NavMeshPathStatus.PathComplete)
+                    {
+                        dog.SetDestination(hit.position);
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.Log("Nam11 Sampled point is on NavMesh but not reachable from current position.");
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private IEnumerator WaitForNavMeshReady()
+    {
+        // Optional: Wait until NavMeshSurface is present
+        yield return new WaitForSeconds(2.0f);
+        yield return new WaitUntil(() =>
+            FindObjectOfType<NavMeshSurface>() != null &&
+            NavMesh.CalculateTriangulation().vertices.Length > 0);
+
+        Debug.Log("Nam11: NavMesh is ready, enabling dog wander.");
+
+    }
+
+    private IEnumerator MakeDogNavigateToTarget(Vector3 targetLocation, float agentSpeed = WALKING_SPEED, float stoppingDistance = 0.3f, float navigationTimeoutTime = 10.0f)
+    {
+        Debug.Log($"Nam11: MakeDogNavigateToTarget start targetLocation = {targetLocation} dog position = {navMeshAgent.transform.position} stoppingDistance = {stoppingDistance}");
+
+        navMeshAgent.enabled = true;
+        navMeshAgent.stoppingDistance = stoppingDistance;
+        navMeshAgent.speed = agentSpeed;
+        navMeshAgent.autoBraking = true;
+        navMeshAgent.SetDestination(targetLocation);
+        animator.SetTrigger("WalkingNormal");
+        while (navMeshAgent.pathPending)
+        {
+            yield return null;
+        }
+
+        float travelTime = 0;
+        //float distanceToTarget = Vector3.Distance(transform.position, randomPosition);
+        Debug.Log($"Nam11: navMeshAgent.remainingDistance = {navMeshAgent.remainingDistance} targetLocation = {targetLocation} dog position = {navMeshAgent.transform.position} navMeshAgent.stoppingDistance = {navMeshAgent.stoppingDistance}");
+        while (navMeshAgent.remainingDistance > DISTANCE_TO_TARGET && travelTime < navigationTimeoutTime)
+        {
+            //if (dogFollowPlayer.isFollowing || isBusy) yield break;
+            yield return null;
+            float distanceToTarget = Vector3.Distance(transform.position, targetLocation);
+            travelTime += Time.deltaTime;
+            //Debug.Log($"Nam11: navMeshAgent.transform.position = {navMeshAgent.transform.position} distanceToTarget = {navMeshAgent.remainingDistance} targetLocation = {targetLocation} navMeshAgent.stoppingDistance = {navMeshAgent.stoppingDistance}");
+        }
+        if (travelTime > navigationTimeoutTime)
+        {
+
+            Debug.Log($"Nam11: travel timeout navMeshAgent = {navMeshAgent.transform.position} distanceToTarget = {navMeshAgent.remainingDistance}");
+        }
+        navMeshAgent.ResetPath();
+        ResetTriggerAndReturnToIdle();
+        Debug.Log($"Nam11: MakeDogNavigateToTarget end travelTime = {travelTime} navigationTimeoutTime = {navigationTimeoutTime} dog position = {navMeshAgent.transform.position} player position = {player.transform.position} dogFollowPlayer.isFollowing = {dogFollowPlayer.isFollowing} isBusy = {isBusy}");
+    }
+
+    private IEnumerator RotateTowardDirection(Vector3 direction)
+    {
+        Debug.Log($"Nam11: RotateTowardDirection start, direction = {direction}");
+
+        if (direction == Vector3.zero)
+        {
+            Debug.LogWarning("Nam11 RotateTowardDirection: Zero direction vector.");
+            yield break;
+        }
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        float tolerance = 1f;
+        float rotationSpeed = 540f;
+        float timeout = 2.5f; // seconds
+        float timer = 0f;
+
+        navMeshAgent.updateRotation = false;
+
+        while (Quaternion.Angle(transform.rotation, targetRotation) > tolerance)
+        {
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+
+            timer += Time.deltaTime;
+            if (timer > timeout)
+            {
+                Debug.LogWarning("Nam11 RotateTowardDirection: Timed out.");
+                break;
+            }
+
+            yield return null;
+        }
+
+        navMeshAgent.updateRotation = true;
+        Debug.Log("Nam11: RotateTowardDirection end");
+    }
+
+    private void ResetTriggerAndReturnToIdle()
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        Debug.Log($"Nam11: ResetTriggerAndReturnToIdle start stateInfo.shortNameHash = {stateInfo.shortNameHash}");
+
+        animator.Play("Idle", 0, 0f);
+        animator.Update(0f);
+        animator.ResetTrigger("WalkingNormal");
+        animator.ResetTrigger("SittingStart");
+        animator.ResetTrigger("Breathing");
+        animator.ResetTrigger("AngryStart");
+        animator.ResetTrigger("WigglingTail");
+        animator.ResetTrigger("EatingStart");
+        animator.ResetTrigger("RunningToIdle");
+        animator.ResetTrigger("WalkingFastToIdle");
+        animator.ResetTrigger("SittingCycleToIdle");
+        animator.ResetTrigger("BreathingToIdle");
+        animator.ResetTrigger("WalkingFast");
+        animator.ResetTrigger("AngryCycleToIdle");
+        animator.ResetTrigger("WigglingTailToIdle");
+        animator.ResetTrigger("EatingCycleToIdle");
+        animator.ResetTrigger("WalkingNormalToIdle");
+        animator.ResetTrigger("EatingCycle");
+        stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        Debug.Log($"Nam11: ResetTriggerAndReturnToIdle end stateInfo.shortNameHash = {stateInfo.shortNameHash}");
+    }
+
+    private IEnumerator WaitForSecond(float numSec)
+    {
+        float startTime = Time.realtimeSinceStartup;
+
+        while (Time.realtimeSinceStartup - startTime < numSec)
+        {
+            yield return null; // wait until delay is met in real-world time
+        }   
+    }
+    
+
 }

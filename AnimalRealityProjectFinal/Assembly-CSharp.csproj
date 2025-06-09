@@ -64,13 +64,47 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.59f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\MRUKSamples\PassthroughRelighting\Scripts\UI\SelectableText.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\CustomSceneManager\DynamicSceneManagerHelper.cs" />
+    <Compile Include="Assets\MRUKSamples\BouncingBall\Scripts\BouncingBallLogic.cs" />
+    <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\GuardianWanderUtil.cs" />
+    <Compile Include="Assets\MRUKSamples\DestructibleMesh\Scripts\DestructibleMeshExperience.cs" />
+    <Compile Include="Assets\MRUKSamples\PassthroughRelighting\Scripts\OppyLightGlow.cs" />
+    <Compile Include="Assets\MRUKSamples\Experimental\EnvironmentPanelPlacement\Scripts\EnvironmentPanelPlacement.cs" />
+    <Compile Include="Assets\MRUKSamples\PassthroughRelighting\Scripts\OppyCharacterController.cs" />
     <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\WavUtility.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Tracking Origin Sample\TrackingOriginSample.cs" />
+    <Compile Include="Assets\MRUKSamples\PassthroughRelighting\FlameCharacter\FlameController.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\CustomSceneManager\SnapshotSceneManager.cs" />
+    <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\ObjectAnchorManager.cs" />
+    <Compile Include="Assets\MRUKSamples\SpaceMap\Scripts\TerrainFlattener.cs" />
+    <Compile Include="Assets\MRUKSamples\PassthroughRelighting\Scripts\UI\DebugPanel.cs" />
     <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\DogMovement.cs" />
+    <Compile Include="Assets\MRUKSamples\AnchorTracker\Scripts\CameraFollower.cs" />
+    <Compile Include="Assets\MRUKSamples\BouncingBall\Scripts\BouncingBallMgr.cs" />
+    <Compile Include="Assets\MRUKSamples\VirtualHome\scripts\Resizer\ResizableObjectsList.cs" />
+    <Compile Include="Assets\MRUKSamples\VirtualHome\scripts\SimpleBillboard.cs" />
+    <Compile Include="Assets\MRUKSamples\BouncingBall\Scripts\EnvironmentColliderDebugger.cs" />
     <Compile Include="Assets\None.cs" />
     <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\WitVoiceCommandHandler.cs" />
+    <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\DogSelectionManager.cs" />
+    <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\MRUKColliderInjector.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\CustomSceneManager\DynamicSceneManager.cs" />
     <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\DogFollowPlayer.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\CustomSceneManager\SceneManagerHelper.cs" />
+    <Compile Include="Assets\MRUKSamples\AnchorTracker\Scripts\KeyboardManager.cs" />
+    <Compile Include="Assets\MRUKSamples\NavMesh\NavMeshComponents\ToolkitScripts\NavMeshAgentController.cs" />
+    <Compile Include="Assets\MRUKSamples\SceneDecorator\Scripts\SceneDecoratorSampleController.cs" />
     <Compile Include="Assets\Bublisher\3D Stylized Animated Dogs Kit\Scripts\DogGestureHandler.cs" />
+    <Compile Include="Assets\MRUKSamples\AnchorTracker\Scripts\Bounded3DVisualizer.cs" />
     <Compile Include="Assets\Samples\Meta XR Interaction ​SDK\76.0.0\Script\DebugLogger.cs" />
+    <Compile Include="Assets\MRUKSamples\VirtualHome\scripts\BiggestAnchorPrefabSpawner.cs" />
+    <Compile Include="Assets\MRUKSamples\AnchorTracker\Scripts\Logger.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\CustomSceneManager\PrefabSceneManager.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\CustomSceneManager\BasicSceneManager.cs" />
+    <Compile Include="Assets\MRUKSamples\BouncingBall\Scripts\MyMeshAgentController.cs" />
+    <Compile Include="Assets\MRUKSamples\NavMesh\Scripts\NavMeshSampleController.cs" />
+    <Compile Include="Assets\Samples\Meta XR Core SDK\76.0.0\Mixed Reality Sample\Scripts\SceneModelLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -90,6 +124,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets\MRUKSamples\SpaceMap\Shaders\TerrainSpaceMap.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
@@ -1537,10 +1572,6 @@
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Oculus.Interaction.Editor">
-      <HintPath>Library\ScriptAssemblies\Oculus.Interaction.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.XR.OpenXR.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.XR.OpenXR.Editor.dll</HintPath>
       <Private>False</Private>
@@ -1649,6 +1680,7 @@
     <ProjectReference Include="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.Editor.csproj" />
     <ProjectReference Include="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.csproj" />
     <ProjectReference Include="Unity.XR.Interaction.Toolkit.Samples.Hands.Editor.csproj" />
+    <ProjectReference Include="Oculus.Interaction.Editor.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <ItemGroup>

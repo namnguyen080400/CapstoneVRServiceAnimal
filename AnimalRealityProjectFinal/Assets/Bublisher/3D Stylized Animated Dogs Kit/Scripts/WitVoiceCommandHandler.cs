@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using TMPro;
+using Meta.XR.MRUtilityKitSamples.BouncingBall;
 
 public class WitVoiceCommandHandler : MonoBehaviour
 {
@@ -16,11 +17,8 @@ public class WitVoiceCommandHandler : MonoBehaviour
     private AudioClip recording;
     private const int SAMPLE_RATE = 16000;
     private string micName;
-<<<<<<< Updated upstream
-    
-=======
+    private BouncingcBallMgr bouncingcBallMgr;
 
->>>>>>> Stashed changes
     
     void Start()
     {
@@ -34,9 +32,11 @@ public class WitVoiceCommandHandler : MonoBehaviour
         micName = Microphone.devices[0];
         Debug.Log("Nam11: Using mic: " + micName);
         recording = Microphone.Start(micName, true, 10, SAMPLE_RATE);
+        bouncingcBallMgr = FindObjectOfType<BouncingcBallMgr>();
 
         //recording = Microphone.Start(null, true, 10, SAMPLE_RATE); // 10-second loop buffer
         StartCoroutine(LoopListening());
+        
     }
 
     IEnumerator LoopListening()
@@ -76,11 +76,7 @@ public class WitVoiceCommandHandler : MonoBehaviour
     IEnumerator WaitForSpeech()
     {
         Debug.Log("Waiting for user to start speaking...");
-<<<<<<< Updated upstream
-        while (GetMicVolume() < 0.01f) // threshold for voice detection
-=======
         while (GetMicVolume() < 0.05f) // threshold for voice detection
->>>>>>> Stashed changes
         {
             yield return null;
         }
@@ -174,21 +170,21 @@ public class WitVoiceCommandHandler : MonoBehaviour
                 Debug.Log("Nam11 Dog sit command recognized!");
                 dog.MakeDogSit();
             }
-            else if (json.ToLower().Contains("wag")) 
+            else if (json.ToLower().Contains("wag"))
             {
                 Debug.Log("Nam11 Wag tail command recognized!");
                 dog.MakeDogWagTail();
-            }   
-            else if (json.ToLower().Contains("walk") || json.ToLower().Contains("go forward")) 
+            }
+            else if (json.ToLower().Contains("walk") || json.ToLower().Contains("go forward"))
             {
                 Debug.Log("Nam11 Walk command recognized!");
-                dog.MakeDogWalk();
+                dog.MakeDogWalkForward();
             }
             else if (json.ToLower().Contains("go back") || json.ToLower().Contains("go backward"))
             {
                 Debug.Log("Nam11 Move back command recognized!");
                 dog.MakeDogMoveBackward();
-            }     
+            }
             else if (json.ToLower().Contains("go left"))
             {
                 Debug.Log("Nam11 Move left command recognized!");
@@ -199,58 +195,50 @@ public class WitVoiceCommandHandler : MonoBehaviour
                 Debug.Log("Nam11 Move right command recognized!");
                 dog.MakeDogMoveRight();
             }
-            else if (json.ToLower().Contains("come here") || json.ToLower().Contains("back here")) 
+            else if (json.ToLower().Contains("come here") || json.ToLower().Contains("back here"))
             {
                 Debug.Log("Nam11 Come here command recognized!");
-                Vector3 playerPosition = player.position;
-                Vector3 direction = (playerPosition - transform.position).normalized;
-                //playerPosition -= direction * stoppingDistanceFromPlayer; // Back off a little
-                playerPosition.y = 0f;
-                dog.navMeshAgent.stoppingDistance = stoppingDistanceFromPlayer;
-                dog.MakeDogComeHere(playerPosition); // Pass the player transform
-            }       
-            else if (json.ToLower().Contains("go there") || json.ToLower().Contains("move there") 
+                dog.MakeDogComeHere(); // Pass the player transform
+            }
+            else if (json.ToLower().Contains("go there") || json.ToLower().Contains("move there")
                     || json.ToLower().Contains("there") || json.ToLower().Contains("over there"))
             {
                 Debug.Log("Nam11 Go there command recognized!");
-                dog.MakeDogGoThere(tennisBall); // Call the new method on DogMovement
+                if (bouncingcBallMgr != null)
+                {
+                    dog.MakeDogGoThere(bouncingcBallMgr.currentLaserTarget); // Call the new method on DogMovement
+                }
+                else
+                {
+                    Debug.LogError("Nam11 bouncingcBallMgr is null");
+                }
             }
             else if (json.ToLower().Contains("stop"))
             {
                 Debug.Log("Nam11 Stop command recognized!");
-<<<<<<< Updated upstream
-                dog.MakeDogStopTransitionToIdle();
-=======
                 dog.MakeDogStop();
 
->>>>>>> Stashed changes
             }
-            else if (json.ToLower().Contains("eat") || json.ToLower().Contains("go eat") 
+            else if (json.ToLower().Contains("eat") || json.ToLower().Contains("go eat")
                     || json.ToLower().Contains("eating") || json.ToLower().Contains("time to eat"))
             {
                 Debug.Log("Nam11 Eat command recognized!");
                 dog.MakeDogGoEat(curryPlate);
             }
             else if (json.ToLower().Contains("bad boy") || json.ToLower().Contains("stupid dog")
-                    || json.ToLower().Contains("bad dog")) 
+                    || json.ToLower().Contains("bad dog"))
             {
                 Debug.Log("Nam11 MakeDogAngry command recognized!");
-                Vector3 playerPosition = player.position;
-                playerPosition.y = 0f;
                 dog.MakeDogAngry(); // Pass the player transform
             }
             else if (json.ToLower().Contains("fetch") || json.ToLower().Contains("get ball")
                     || json.ToLower().Contains("go get ball") || json.ToLower().Contains("get the ball"))
             {
                 Debug.Log("Nam11 Fetch command recognized!");
-                dog.MakeDogFetchBall(tennisBall, player);
+                bouncingcBallMgr.Reset();
+                dog.MakeDogFetchBall(tennisBall);
             }
-<<<<<<< Updated upstream
-            else if (json.ToLower().Contains("throw") || json.ToLower().Contains("throw ball")
-                    || json.ToLower().Contains("move ball") || json.ToLower().Contains("get it again")
-=======
             else if (json.ToLower().Contains("move ball") || json.ToLower().Contains("get it again")
->>>>>>> Stashed changes
                     || json.ToLower().Contains("get ball again") || json.ToLower().Contains("get the ball again"))
             {
                 Debug.Log("Nam11 Throw ball command recognized!");
@@ -265,16 +253,8 @@ public class WitVoiceCommandHandler : MonoBehaviour
                     || json.ToLower().Contains("i feel bad") || json.ToLower().Contains("i have a bad day"))
             {
                 Debug.Log("Nam11 Comfort me command recognized!");
-                Vector3 playerPosition = player.position;
-                playerPosition.y = 0;
-                dog.MakeDogComfortMe(playerPosition);
+                dog.MakeDogComfortMe();
             }
-<<<<<<< Updated upstream
-
-            else 
-            {
-                Debug.Log("Nam11 No recognized command found.");
-=======
             else if (json.ToLower().Contains("go play") || json.ToLower().Contains("go playing"))
             {
                 Debug.Log("Nam11 Go playing command recognized!");
@@ -282,25 +262,15 @@ public class WitVoiceCommandHandler : MonoBehaviour
             }
             else if (json.ToLower().Contains("let play math game") || json.ToLower().Contains("let play game") ||
                 json.ToLower().Contains("let's play math game") || json.ToLower().Contains("let's play game")
-                || json.ToLower().Contains("time to play")) 
+                || json.ToLower().Contains("time to play"))
             {
-                Vector3 playerPosition = player.position;
-                playerPosition.y = 0;
-                dog.MathGameSetup(playerPosition, "let play math game");
+                dog.MathGameSetup("let play math game");
             }
             else if (json.ToLower().Contains("are you ready"))
             {
-                Vector3 playerPosition = player.position;
-                playerPosition.y = 0;
-                dog.MathGameSetup(playerPosition, "are you ready");
+                dog.MathGameSetup("are you ready");
             }
-            else if (json.ToLower().Contains("let go") || json.ToLower().Contains("let's go"))
-            {
-                Vector3 playerPosition = player.position;
-                playerPosition.y = 0;
-                dog.MathGameSetup(playerPosition, "let go");
-            }
-            else if (json.ToLower().Contains("incorrect") || json.ToLower().Contains("wrong") 
+            else if (json.ToLower().Contains("incorrect") || json.ToLower().Contains("wrong")
             || json.ToLower().Contains("very close") || json.ToLower().Contains("still wrong")
             || json.ToLower().Contains("it's close") || json.ToLower().Contains("its close")
             || json.ToLower().Contains("it close") || json.ToLower().Contains("oh boy"))
@@ -321,31 +291,28 @@ public class WitVoiceCommandHandler : MonoBehaviour
                     || json.ToLower().Contains("break time"))
             {
                 dog.DogEndMathSection();
-            } 
-            else 
+            }
+            else
             {
                 string cleanedText = json.ToLower().Trim();
                 Debug.Log($"Nam11: Math expression cleanedText = {cleanedText}");
                 string expression = ExtractMathExpression(cleanedText);
-                if (expression != "") 
+                if (expression != "")
                 {
                     int result = Mathf.Clamp(dog.predefinedMathExpressions[expression], 0, 10); // limit barking
                     Debug.Log($"Nam11: Found predefined math expression '{expression}' = {result}");
                     dog.MakeDogDoMath(expression);
                     //yield break;
                 }
-                else 
+                else
                 {
                     Debug.Log("Nam11 No recognized command found.");
                 }
-                
->>>>>>> Stashed changes
+
             }            
         }
     }
 
-<<<<<<< Updated upstream
-=======
     private string ExtractMathExpression(string jsonString) 
     {
         string result = "";
@@ -360,7 +327,6 @@ public class WitVoiceCommandHandler : MonoBehaviour
         return result;
     } 
 
->>>>>>> Stashed changes
     bool IsLoudEnough(AudioClip clip, float threshold = 0.01f)
     {
         float[] samples = new float[clip.samples];
