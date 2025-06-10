@@ -48,7 +48,7 @@ public class Message
 
 public class ChatHandler : MonoBehaviour, IChatHandler
 {
-    [SerializeField] private string openRouterKey = "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";
+    [SerializeField] private string openRouterKey = "openrouterkey";
     [SerializeField] private string openRouterEndpoint = "https://openrouter.ai/api/v1/chat/completions";
     [SerializeField] private string model = "openai/gpt-3.5-turbo";
 
